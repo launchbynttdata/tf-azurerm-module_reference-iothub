@@ -38,9 +38,8 @@ module "resource_group" {
 }
 
 module "iothub" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm"
-  # version = "~> 1.0"
-  source = "git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-iothub.git//.?ref=feature!/init"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm"
+  version = "~> 1.0"
 
   name                = module.resource_names["iothub"].standard
   location            = var.location
@@ -51,24 +50,22 @@ module "iothub" {
   event_hub_partition_count     = var.event_hub_partition_count
   event_hub_retention_in_days   = var.event_hub_retention_in_days
   public_network_access_enabled = var.iothub_public_network_access_enabled
-  # minimum_tls_version           = var.minimum_tls_version
-  endpoints        = var.endpoints
-  fallback_route   = var.fallback_route
-  file_uploads     = var.file_uploads
-  identity         = var.identity
-  network_rule_set = var.network_rule_set
-  routes           = var.routes
-  enrichments      = var.enrichments
-  cloud_to_device  = var.cloud_to_device
-  consumer_groups  = var.consumer_groups
-  tags             = local.tags
-  depends_on       = [module.resource_group]
+  endpoints                     = var.endpoints
+  fallback_route                = var.fallback_route
+  file_uploads                  = var.file_uploads
+  identity                      = var.identity
+  network_rule_set              = var.network_rule_set
+  routes                        = var.routes
+  enrichments                   = var.enrichments
+  cloud_to_device               = var.cloud_to_device
+  consumer_groups               = var.consumer_groups
+  tags                          = local.tags
+  depends_on                    = [module.resource_group]
 }
 
 module "iothub_dps" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub_dps/azurerm"
-  # version = "~> 1.0"
-  source = "git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-iothub_dps.git//.?ref=feature!/init"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub_dps/azurerm"
+  version = "~> 1.0"
 
   name                = module.resource_names["device_provisioning_service"].standard
   location            = var.location
@@ -83,5 +80,3 @@ module "iothub_dps" {
   tags                          = local.tags
   depends_on                    = [module.resource_group]
 }
-
-# TODO shall we provision eventhub namespace and eventhub here?

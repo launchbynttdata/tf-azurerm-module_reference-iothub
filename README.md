@@ -121,8 +121,8 @@ No providers.
 |------|--------|---------|
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.0 |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.0 |
-| <a name="module_iothub"></a> [iothub](#module\_iothub) | git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-iothub.git//. | feature!/init |
-| <a name="module_iothub_dps"></a> [iothub\_dps](#module\_iothub\_dps) | git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-iothub_dps.git//. | feature!/init |
+| <a name="module_iothub"></a> [iothub](#module\_iothub) | terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm | ~> 1.0 |
+| <a name="module_iothub_dps"></a> [iothub\_dps](#module\_iothub\_dps) | terraform.registry.launch.nttdata.com/module_primitive/iothub_dps/azurerm | ~> 1.0 |
 
 ## Resources
 
