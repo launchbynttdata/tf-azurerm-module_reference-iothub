@@ -36,6 +36,10 @@ variable "resource_names_map" {
       name       = "dps"
       max_length = 80
     }
+    eventhub_namespace = {
+      name       = "evthubns"
+      max_length = 80
+    }
   }
 }
 
@@ -328,7 +332,7 @@ variable "consumer_groups" {
   default = {}
 }
 
-# # Device Provisioning Service Properties
+# Device Provisioning Service Properties
 variable "allocation_policy" {
   type        = string
   description = "(Optional) The allocation policy of the IoT Device Provisioning Service (Hashed, GeoLatency or Static). Defaults to Hashed."
@@ -395,4 +399,45 @@ variable "ip_filter_rules" {
     target  = optional(string)
   }))
   default = []
+}
+
+# Event Hub Namespace Properties
+variable "eventhub_namespace_sku" {
+  description = "The sku for the eventhub namespace. Possible values: Basic, Standard, Premium"
+  type        = string
+  default     = "Standard"
+}
+
+variable "eventhub_namespace_capacity" {
+  description = <<EOT
+  The capacity of the Event Hub Namespace:
+  - Basic: 1
+  - Standard: Between 1 and 20
+  - Premium: Between 1 and 4
+  EOT
+  type        = number
+  default     = 1
+}
+
+# eventhub Properties
+variable "eventhubs" {
+  description = "A list of event hubs"
+  type = map(object({
+    partition_count   = optional(number)
+    message_retention = optional(number)
+    status            = optional(string)
+    capture_description = optional(object({
+      enabled             = bool
+      encoding            = string
+      interval_in_seconds = number
+      size_limit_in_bytes = number
+      destination = object({
+        name                = string
+        blob_container_name = string
+        archive_name_format = string
+        storage_account_id  = string
+      })
+    }))
+  }))
+  default = {}
 }

@@ -35,12 +35,13 @@ module "resource_group" {
   name     = module.resource_names["resource_group"].standard
   location = var.location
 
-  tags = merge(var.tags, { resource_name = module.resource_names["resource_group"].standard })
+  tags = merge(local.tags, { resource_name = module.resource_names["resource_group"].standard })
 }
 
 module "iothub" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm"
-  version = "~> 1.0"
+  # source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm"
+  # version = "~> 1.0"
+  source = "git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-iothub.git//.?ref=fix/add-output"
 
   name                = module.resource_names["iothub"].standard
   location            = var.location
@@ -60,8 +61,9 @@ module "iothub" {
   enrichments                   = var.enrichments
   cloud_to_device               = var.cloud_to_device
   consumer_groups               = var.consumer_groups
-  tags                          = local.tags
-  depends_on                    = [module.resource_group]
+
+  tags       = merge(local.tags, { resource_name = module.resource_names["iothub"].standard })
+  depends_on = [module.resource_group]
 }
 
 module "iothub_dps" {
@@ -76,8 +78,47 @@ module "iothub_dps" {
   data_residency_enabled        = var.data_residency_enabled
   public_network_access_enabled = var.public_network_access_enabled
   sku                           = var.dps_sku
-  linked_hubs                   = var.linked_hubs
-  ip_filter_rules               = var.ip_filter_rules
-  tags                          = local.tags
-  depends_on                    = [module.resource_group]
+  linked_hubs = concat([{
+    connection_string = module.iothub.default_connection_string
+    location          = var.location
+  }], var.linked_hubs)
+  ip_filter_rules = var.ip_filter_rules
+
+  tags       = merge(local.tags, { resource_name = module.resource_names["device_provisioning_service"].standard })
+  depends_on = [module.resource_group]
 }
+
+module "eventhub_namespace" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/eventhub_namespace/azurerm"
+  version = "~> 1.0.0"
+
+  namespace_name      = module.resource_names["eventhub_namespace"].standard
+  location            = var.location
+  resource_group_name = module.resource_group.name
+
+  sku                           = var.eventhub_namespace_sku
+  capacity                      = var.eventhub_namespace_capacity
+  public_network_access_enabled = var.public_network_access_enabled
+
+  tags       = merge(local.tags, { resource_name = module.resource_names["eventhub_namespace"].standard })
+  depends_on = [module.resource_group]
+}
+
+module "eventhub" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/eventhub/azurerm"
+  version = "~> 1.0.0"
+
+  for_each            = var.eventhubs
+  eventhub_name       = each.key
+  namespace_name      = module.eventhub_namespace.namespace_name
+  resource_group_name = module.resource_group.name
+  partition_count     = each.value.partition_count
+  message_retention   = each.value.message_retention
+  status              = each.value.status
+  capture_description = each.value.capture_description
+  depends_on          = [module.resource_group]
+}
+
+# metric alerts
+
+# diagnostic settings
