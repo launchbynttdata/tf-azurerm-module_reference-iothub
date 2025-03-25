@@ -1,4 +1,4 @@
-module github.com/launchbynttdata/tf-azurerm-module_primitive-iothub
+module github.com/launchbynttdata/tf-azurerm-module_reference-iothub
 
 go 1.22
 
@@ -8,7 +8,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/deviceprovisioningservices/armdeviceprovisioningservices v1.2.0
 	github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/iothub/armiothub v1.3.0
 	github.com/gruntwork-io/terratest v0.43.12
-	github.com/launchbynttdata/lcaf-component-terratest v1.0.3
+	github.com/launchbynttdata/lcaf-component-terratest v1.0.4
 	github.com/stretchr/testify v1.9.0
 )
 

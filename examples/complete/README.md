@@ -1,4 +1,4 @@
-# tf-azurerm-module_primitive-log_analytics_workspace
+# tf-azurerm-module_reference_iothub
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

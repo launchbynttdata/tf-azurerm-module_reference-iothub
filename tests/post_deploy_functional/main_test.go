@@ -17,7 +17,7 @@ import (
 
 	"github.com/launchbynttdata/lcaf-component-terratest/lib"
 	"github.com/launchbynttdata/lcaf-component-terratest/types"
-	testimpl "github.com/launchbynttdata/tf-azurerm-module_primitive-iothub/tests/testimpl"
+	testimpl "github.com/launchbynttdata/tf-azurerm-module_reference-iothub/tests/testimpl"
 )
 
 const (

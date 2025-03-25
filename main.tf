@@ -25,6 +25,7 @@ module "resource_names" {
   instance_env            = var.instance_env
   maximum_length          = each.value.max_length
   instance_resource       = var.instance_resource
+  use_azure_region_abbr   = var.use_azure_region_abbr
 }
 
 module "resource_group" {
@@ -49,7 +50,7 @@ module "iothub" {
   local_authentication_enabled  = var.local_authentication_enabled
   event_hub_partition_count     = var.event_hub_partition_count
   event_hub_retention_in_days   = var.event_hub_retention_in_days
-  public_network_access_enabled = var.iothub_public_network_access_enabled
+  public_network_access_enabled = var.public_network_access_enabled
   endpoints                     = var.endpoints
   fallback_route                = var.fallback_route
   file_uploads                  = var.file_uploads
@@ -73,7 +74,7 @@ module "iothub_dps" {
 
   allocation_policy             = var.allocation_policy
   data_residency_enabled        = var.data_residency_enabled
-  public_network_access_enabled = var.iothub_dps_public_network_access_enabled
+  public_network_access_enabled = var.public_network_access_enabled
   sku                           = var.dps_sku
   linked_hubs                   = var.linked_hubs
   ip_filter_rules               = var.ip_filter_rules

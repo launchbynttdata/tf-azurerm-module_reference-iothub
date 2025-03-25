@@ -39,6 +39,12 @@ variable "resource_names_map" {
   }
 }
 
+variable "public_network_access_enabled" {
+  type        = bool
+  description = "(Optional) Is the IotHub resource accessible from a public network? Defaults to true."
+  default     = true
+}
+
 variable "tags" {
   type        = map(string)
   description = "(Optional) A mapping of tags to assign to the resource."
@@ -76,6 +82,12 @@ variable "class_env" {
   default     = "dev"
 }
 
+variable "use_azure_region_abbr" {
+  type        = bool
+  description = "Use Azure region abbreviation in resource names."
+  default     = true
+}
+
 # Iot Hub Properties
 variable "local_authentication_enabled" {
   type        = bool
@@ -86,27 +98,13 @@ variable "local_authentication_enabled" {
 variable "event_hub_partition_count" {
   type        = number
   description = "(Optional) The number of device-to-cloud partitions used by backing event hubs. Must be between 2 and 128. Defaults to 4."
-  validation {
-    condition     = var.event_hub_partition_count >= 2 && var.event_hub_partition_count <= 128
-    error_message = "Must be between 2 and 128."
-  }
-  default = 4
+  default     = 4
 }
 
 variable "event_hub_retention_in_days" {
   type        = number
   description = "(Optional) The event hub retention to use in days. Must be between 1 and 7. Defaults to 1."
-  validation {
-    condition     = var.event_hub_retention_in_days >= 1 && var.event_hub_retention_in_days <= 7
-    error_message = "Must be between 1 and 7."
-  }
-  default = 1
-}
-
-variable "iothub_public_network_access_enabled" {
-  type        = bool
-  description = "(Optional) Is the IotHub resource accessible from a public network? Defaults to true."
-  default     = true
+  default     = 1
 }
 
 variable "iothub_sku" {
@@ -121,10 +119,6 @@ variable "iothub_sku" {
     name     = string
     capacity = number
   })
-  validation {
-    condition     = contains(["B1", "B2", "B3", "F1", "S1", "S2", "S3"], var.iothub_sku.name)
-    error_message = "Must be either `B1`, `B2`, `B3`, `F1`, `S1`, `S2`, or `S3`."
-  }
   default = {
     name     = "S1"
     capacity = 1
@@ -228,10 +222,6 @@ variable "identity" {
     identity_type = string
     identity_ids  = optional(list(string))
   })
-  validation {
-    condition     = contains(["SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned"], var.identity.identity_type)
-    error_message = "`identity_type`'s possible values are `SystemAssigned`, `UserAssigned`, and `SystemAssigned, UserAssigned`."
-  }
   default = {
     identity_type = "SystemAssigned"
   }
@@ -342,23 +332,13 @@ variable "consumer_groups" {
 variable "allocation_policy" {
   type        = string
   description = "(Optional) The allocation policy of the IoT Device Provisioning Service (Hashed, GeoLatency or Static). Defaults to Hashed."
-  validation {
-    condition     = contains(["Hashed", "GeoLatency", "Static"], var.allocation_policy)
-    error_message = "Allocation policy must be one of Hashed, GeoLatency or Static."
-  }
-  default = "Hashed"
+  default     = "Hashed"
 }
 
 variable "data_residency_enabled" {
   type        = bool
   description = "Optional) Specifies if the IoT Device Provisioning Service has data residency and disaster recovery enabled. Defaults to false."
   default     = false
-}
-
-variable "iothub_dps_public_network_access_enabled" {
-  type        = bool
-  description = "(Optional) Boolean flag to specify whether or not public network access is enabled or not. Defaults to true."
-  default     = true
 }
 
 variable "dps_sku" {

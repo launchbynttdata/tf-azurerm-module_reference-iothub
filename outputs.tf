@@ -34,3 +34,8 @@ output "iothub_dps_name" {
   description = "The IoT Hub Device Provisioning Service Name."
   value       = module.iothub_dps.name
 }
+
+output "scope_id" {
+  description = "The IoT Hub Device Provisioning Service Scope Id."
+  value       = module.iothub_dps.id_scope
+}
