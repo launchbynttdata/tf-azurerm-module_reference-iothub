@@ -39,9 +39,8 @@ module "resource_group" {
 }
 
 module "iothub" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm"
-  # version = "~> 1.0"
-  source = "git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-iothub.git//.?ref=fix/add-output"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm"
+  version = "~> 1.0"
 
   name                = module.resource_names["iothub"].standard
   location            = var.location
@@ -79,7 +78,7 @@ module "iothub_dps" {
   public_network_access_enabled = var.public_network_access_enabled
   sku                           = var.dps_sku
   linked_hubs = concat([{
-    connection_string = module.iothub.default_connection_string
+    connection_string = module.iothub.shared_access_primary_connection_string
     location          = var.location
   }], var.linked_hubs)
   ip_filter_rules = var.ip_filter_rules
@@ -120,5 +119,67 @@ module "eventhub" {
 }
 
 # metric alerts
+module "monitor_action_group" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_action_group/azurerm"
+  version = "~> 1.0.0"
+
+  count               = var.action_group_name != null ? 1 : 0
+  action_group_name   = var.action_group_name
+  resource_group_name = module.resource_group.name
+  short_name          = var.short_name
+  arm_role_receivers  = var.arm_role_receivers
+  email_receivers     = var.email_receivers
+  tags                = var.tags
+  depends_on          = [module.resource_group]
+}
+
+module "monitor_metric_alert" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_metric_alert/azurerm"
+  version = "~> 1.0.0"
+
+  for_each            = var.metric_alerts
+  name                = each.key
+  resource_group_name = module.resource_group.name
+  scopes              = each.value.scopes
+  description         = each.value.description
+  frequency           = each.value.frequency
+  severity            = each.value.severity
+  enabled             = each.value.enabled
+  action_group_ids    = each.value.action_group_ids
+  webhook_properties  = each.value.webhook_properties
+  criteria            = each.value.criteria
+  dynamic_criteria    = each.value.dynamic_criteria
+
+  depends_on = [module.resource_group]
+}
 
 # diagnostic settings
+module "log_analytics_workspace" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/log_analytics_workspace/azurerm"
+  version = "~> 1.0"
+
+  for_each                      = var.log_analytics_workspace
+  name                          = module.resource_names["log_analytics_workspace"].standard
+  location                      = var.location
+  resource_group_name           = module.resource_group.name
+  sku                           = each.value.sku
+  retention_in_days             = each.value.retention_in_days
+  identity                      = each.value.identity
+  local_authentication_disabled = each.value.local_authentication_disabled
+
+  tags       = merge(local.tags, { resource_name = module.resource_names["log_analytics_workspace"].standard })
+  depends_on = [module.resource_group]
+}
+
+module "diagnostic_setting" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_diagnostic_setting/azurerm"
+  version = "~> 1.0"
+
+  for_each                   = var.diagnostic_settings
+  name                       = module.resource_names["diagnostic_setting"].standard
+  target_resource_id         = module.iothub.id
+  log_analytics_workspace_id = module.log_analytics_workspace[keys(var.log_analytics_workspace)[0]].id
+  # log_analytics_destination_type = each.value.log_analytics_destination_type != null ? each.value.log_analytics_destination_type : "AzureDiagnostics"
+  enabled_log = each.value.enabled_log
+  metric      = each.value.metric
+}

@@ -40,6 +40,14 @@ variable "resource_names_map" {
       name       = "evthubns"
       max_length = 80
     }
+    diagnostic_setting = {
+      name       = "ds"
+      max_length = 80
+    }
+    log_analytics_workspace = {
+      name       = "law"
+      max_length = 80
+    }
   }
 }
 
@@ -438,6 +446,119 @@ variable "eventhubs" {
         storage_account_id  = string
       })
     }))
+  }))
+  default = {}
+}
+
+# Monitor Action Group Properties
+variable "action_group_name" {
+  description = "Specifies the Name of the action group."
+  type        = string
+  default     = null
+}
+
+variable "short_name" {
+  description = "The short name of the action group."
+  type        = string
+  default     = null
+}
+
+variable "arm_role_receivers" {
+  description = <<EOT
+  List of ARM role receivers. Each entry should have:
+  - name (string): The name of the ARM role receiver.
+  - role_id (string): The ARM role ID.
+  - use_common_alert_schema (bool, optional): Whether to use the common alert schema.
+  EOT
+  type = list(object({
+    name                    = string
+    role_id                 = string
+    use_common_alert_schema = optional(bool)
+  }))
+  default = []
+}
+
+variable "email_receivers" {
+  description = <<EOT
+  List of email receivers. Each entry should have:
+  - name (string): The name of the ARM role receiver.
+  - email_address (string): The email address to receive alerts.
+  - use_common_alert_schema (bool, optional): Whether to use the common alert schema.
+  EOT
+  type = list(object({
+    name                    = string
+    email_address           = string
+    use_common_alert_schema = optional(bool)
+  }))
+  default = []
+}
+
+# Monitor Metric Alert Properties
+variable "metric_alerts" {
+  type = map(object({
+    scopes             = list(string)
+    description        = optional(string)
+    frequency          = optional(string)
+    severity           = optional(number)
+    enabled            = optional(bool)
+    action_group_ids   = string
+    webhook_properties = optional(map(string))
+    criteria = optional(list(object({
+      metric_namespace       = string
+      metric_name            = string
+      aggregation            = string
+      operator               = string
+      threshold              = number
+      skip_metric_validation = optional(bool, false)
+      dimensions = optional(list(object({
+        name     = string
+        operator = string
+        values   = list(string)
+      })), [])
+    })))
+    dynamic_criteria = optional(object({
+      metric_namespace       = string
+      metric_name            = string
+      aggregation            = string
+      operator               = string
+      alert_sensitivity      = string
+      ignore_data_before     = optional(string)
+      skip_metric_validation = optional(bool, false)
+      dimensions = optional(list(object({
+        name     = string
+        operator = string
+        values   = list(string)
+      })), [])
+    }))
+  }))
+  default = {}
+}
+
+variable "diagnostic_settings" {
+  type = map(object({
+    enabled_log = optional(list(object({
+      category_group = optional(string, "allLogs")
+      category       = optional(string, null)
+    })))
+    metric = optional(object({
+      category = optional(string)
+      enabled  = optional(bool)
+    }))
+    # log_analytics_destination_type = optional(string)
+  }))
+  default = {}
+}
+
+variable "log_analytics_workspace" {
+  type = map(object({
+    sku               = string
+    retention_in_days = number
+    daily_quota_gb    = number
+    identity = optional(object({
+      type         = string
+      identity_ids = optional(list(string))
+    }))
+    local_authentication_disabled = optional(bool)
   }))
   default = {}
 }
