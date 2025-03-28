@@ -451,57 +451,38 @@ variable "eventhubs" {
 }
 
 # Monitor Action Group Properties
-variable "action_group_name" {
-  description = "Specifies the Name of the action group."
-  type        = string
-  default     = null
-}
-
-variable "short_name" {
-  description = "The short name of the action group."
-  type        = string
-  default     = null
-}
-
-variable "arm_role_receivers" {
+variable "action_groups" {
   description = <<EOT
-  List of ARM role receivers. Each entry should have:
-  - name (string): The name of the ARM role receiver.
-  - role_id (string): The ARM role ID.
-  - use_common_alert_schema (bool, optional): Whether to use the common alert schema.
+  Map of action groups. Each action group can have:
+  - short_name: (Required) The short name of the action group
+  - arm_role_receivers: (Optional) List of ARM role receivers
+  - email_receivers: (Optional) List of email receivers
   EOT
-  type = list(object({
-    name                    = string
-    role_id                 = string
-    use_common_alert_schema = optional(bool)
+  type = map(object({
+    short_name = string
+    arm_role_receivers = optional(list(object({
+      name                    = string
+      role_id                 = string
+      use_common_alert_schema = optional(bool)
+    })), [])
+    email_receivers = optional(list(object({
+      name                    = string
+      email_address           = string
+      use_common_alert_schema = optional(bool)
+    })), [])
   }))
-  default = []
-}
-
-variable "email_receivers" {
-  description = <<EOT
-  List of email receivers. Each entry should have:
-  - name (string): The name of the ARM role receiver.
-  - email_address (string): The email address to receive alerts.
-  - use_common_alert_schema (bool, optional): Whether to use the common alert schema.
-  EOT
-  type = list(object({
-    name                    = string
-    email_address           = string
-    use_common_alert_schema = optional(bool)
-  }))
-  default = []
+  default = {}
 }
 
 # Monitor Metric Alert Properties
 variable "metric_alerts" {
   type = map(object({
-    scopes             = list(string)
-    description        = optional(string)
-    frequency          = optional(string)
-    severity           = optional(number)
-    enabled            = optional(bool)
-    action_group_ids   = string
+    # scopes             = list(string)
+    description = optional(string)
+    frequency   = optional(string)
+    severity    = optional(number)
+    enabled     = optional(bool)
+    # action_group_ids   = string
     webhook_properties = optional(map(string))
     criteria = optional(list(object({
       metric_namespace       = string

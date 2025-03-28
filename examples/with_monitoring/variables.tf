@@ -17,21 +17,32 @@ variable "location" {
 }
 
 # Monitor Action Group Properties
-# variable "action_group_name" {
-#   description = "Specifies the Name of the action group."
-#   type        = string
-#   default    = null
-# }
+variable "action_groups" {
+  type = map(object({
+    short_name = string
+    arm_role_receivers = optional(list(object({
+      name                    = string
+      role_id                 = string
+      use_common_alert_schema = optional(bool)
+    })), [])
+    email_receivers = optional(list(object({
+      name                    = string
+      email_address           = string
+      use_common_alert_schema = optional(bool)
+    })), [])
+  }))
+  default = {}
+}
 
 # Monitor Metric Alert Properties
 variable "metric_alerts" {
   type = map(object({
-    scopes             = list(string)
-    description        = optional(string)
-    frequency          = optional(string)
-    severity           = optional(number)
-    enabled            = optional(bool)
-    action_group_ids   = string
+    # scopes             = list(string)
+    description = optional(string)
+    frequency   = optional(string)
+    severity    = optional(number)
+    enabled     = optional(bool)
+    # action_group_ids   = string
     webhook_properties = optional(map(string))
     criteria = optional(list(object({
       metric_namespace       = string

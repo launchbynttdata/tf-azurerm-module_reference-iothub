@@ -91,6 +91,7 @@ module "eventhub_namespace" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/eventhub_namespace/azurerm"
   version = "~> 1.0.0"
 
+  count               = length(var.eventhubs) > 0 ? 1 : 0
   namespace_name      = module.resource_names["eventhub_namespace"].standard
   location            = var.location
   resource_group_name = module.resource_group.name
@@ -109,7 +110,7 @@ module "eventhub" {
 
   for_each            = var.eventhubs
   eventhub_name       = each.key
-  namespace_name      = module.eventhub_namespace.namespace_name
+  namespace_name      = module.eventhub_namespace[0].namespace_name
   resource_group_name = module.resource_group.name
   partition_count     = each.value.partition_count
   message_retention   = each.value.message_retention
@@ -123,29 +124,29 @@ module "monitor_action_group" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_action_group/azurerm"
   version = "~> 1.0.0"
 
-  count               = var.action_group_name != null ? 1 : 0
-  action_group_name   = var.action_group_name
+  for_each            = var.action_groups
+  action_group_name   = each.key
   resource_group_name = module.resource_group.name
-  short_name          = var.short_name
-  arm_role_receivers  = var.arm_role_receivers
-  email_receivers     = var.email_receivers
+  short_name          = each.value.short_name
+  arm_role_receivers  = each.value.arm_role_receivers
+  email_receivers     = each.value.email_receivers
   tags                = var.tags
   depends_on          = [module.resource_group]
 }
 
 module "monitor_metric_alert" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_metric_alert/azurerm"
-  version = "~> 1.0.0"
+  version = "~> 1.1"
 
   for_each            = var.metric_alerts
   name                = each.key
   resource_group_name = module.resource_group.name
-  scopes              = each.value.scopes
+  scopes              = [module.iothub.id]
   description         = each.value.description
   frequency           = each.value.frequency
   severity            = each.value.severity
   enabled             = each.value.enabled
-  action_group_ids    = each.value.action_group_ids
+  action_group_ids    = module.monitor_action_group[keys(var.action_groups)[0]].action_group_id
   webhook_properties  = each.value.webhook_properties
   criteria            = each.value.criteria
   dynamic_criteria    = each.value.dynamic_criteria
