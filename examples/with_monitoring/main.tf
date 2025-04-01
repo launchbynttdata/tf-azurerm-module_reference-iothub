@@ -14,25 +14,23 @@ module "iothub" {
   source   = "../.."
   location = var.location
 
-  action_groups = merge(var.action_groups, {
-    example-action-group = {
-      short_name = "eala"
-      arm_role_receivers = [
-        {
-          name                    = "example-arm-role"
-          role_id                 = "b24988ac-6180-42a0-ab88-20f7382dd24c"
-          use_common_alert_schema = true
-        }
-      ]
-      email_receivers = [
-        {
-          name                    = "example-email"
-          email_address           = "example@test.com"
-          use_common_alert_schema = true
-        }
-      ]
-    }
-  })
+  action_group = try({
+    name       = "example-action-group"
+    short_name = "exag"
+    arm_role_receivers = [
+      {
+        name                    = "example-arm-role"
+        role_id                 = "b24988ac-6180-42a0-ab88-20f7382dd24c"
+        use_common_alert_schema = true
+      }
+    ]
+    email_receivers = [
+      {
+        name                    = "example-email"
+        email_address           = "example@test.com"
+        use_common_alert_schema = true
+      }
+  ] }, var.action_group)
 
   # metric_alerts = merge(var.metric_alerts, {})
   metric_alerts = merge(var.metric_alerts, {
@@ -75,16 +73,13 @@ module "iothub" {
     }
   })
 
-  # log_analytics_workspace = {}
-  log_analytics_workspace = merge(var.log_analytics_workspace, {
-    default = {
-      sku                           = "PerGB2018"
-      retention_in_days             = 30
-      daily_quota_gb                = 10
-      identity                      = null
-      local_authentication_disabled = false
-    }
-  })
+  log_analytics_workspace = try({
+    sku                           = "PerGB2018"
+    retention_in_days             = 30
+    daily_quota_gb                = 10
+    identity                      = null
+    local_authentication_disabled = false
+  }, var.log_analytics_workspace)
 
   # diagnostic_settings = {}
   diagnostic_settings = merge(var.diagnostic_settings, {

@@ -451,14 +451,15 @@ variable "eventhubs" {
 }
 
 # Monitor Action Group Properties
-variable "action_groups" {
+variable "action_group" {
   description = <<EOT
-  Map of action groups. Each action group can have:
+  An action group object. Each action group can have:
   - short_name: (Required) The short name of the action group
   - arm_role_receivers: (Optional) List of ARM role receivers
   - email_receivers: (Optional) List of email receivers
   EOT
-  type = map(object({
+  type = object({
+    name       = string
     short_name = string
     arm_role_receivers = optional(list(object({
       name                    = string
@@ -470,8 +471,8 @@ variable "action_groups" {
       email_address           = string
       use_common_alert_schema = optional(bool)
     })), [])
-  }))
-  default = {}
+  })
+  default = null
 }
 
 # Monitor Metric Alert Properties
@@ -531,7 +532,7 @@ variable "diagnostic_settings" {
 }
 
 variable "log_analytics_workspace" {
-  type = map(object({
+  type = object({
     sku               = string
     retention_in_days = number
     daily_quota_gb    = number
@@ -540,6 +541,6 @@ variable "log_analytics_workspace" {
       identity_ids = optional(list(string))
     }))
     local_authentication_disabled = optional(bool)
-  }))
-  default = {}
+  })
+  default = null
 }

@@ -17,8 +17,9 @@ variable "location" {
 }
 
 # Monitor Action Group Properties
-variable "action_groups" {
-  type = map(object({
+variable "action_group" {
+  type = object({
+    name       = string
     short_name = string
     arm_role_receivers = optional(list(object({
       name                    = string
@@ -30,8 +31,8 @@ variable "action_groups" {
       email_address           = string
       use_common_alert_schema = optional(bool)
     })), [])
-  }))
-  default = {}
+  })
+  default = null
 }
 
 # Monitor Metric Alert Properties

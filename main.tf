@@ -124,12 +124,12 @@ module "monitor_action_group" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_action_group/azurerm"
   version = "~> 1.0.0"
 
-  for_each            = var.action_groups
-  action_group_name   = each.key
+  count               = var.action_group != null ? 1 : 0
+  action_group_name   = var.action_group.name
   resource_group_name = module.resource_group.name
-  short_name          = each.value.short_name
-  arm_role_receivers  = each.value.arm_role_receivers
-  email_receivers     = each.value.email_receivers
+  short_name          = var.action_group.short_name
+  arm_role_receivers  = var.action_group.arm_role_receivers
+  email_receivers     = var.action_group.email_receivers
   tags                = var.tags
   depends_on          = [module.resource_group]
 }
@@ -146,7 +146,7 @@ module "monitor_metric_alert" {
   frequency           = each.value.frequency
   severity            = each.value.severity
   enabled             = each.value.enabled
-  action_group_ids    = module.monitor_action_group[keys(var.action_groups)[0]].action_group_id
+  action_group_ids    = module.monitor_action_group[0].action_group_id
   webhook_properties  = each.value.webhook_properties
   criteria            = each.value.criteria
   dynamic_criteria    = each.value.dynamic_criteria
@@ -159,14 +159,14 @@ module "log_analytics_workspace" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/log_analytics_workspace/azurerm"
   version = "~> 1.0"
 
-  for_each                      = var.log_analytics_workspace
+  count                         = var.log_analytics_workspace != null ? 1 : 0
   name                          = module.resource_names["log_analytics_workspace"].standard
   location                      = var.location
   resource_group_name           = module.resource_group.name
-  sku                           = each.value.sku
-  retention_in_days             = each.value.retention_in_days
-  identity                      = each.value.identity
-  local_authentication_disabled = each.value.local_authentication_disabled
+  sku                           = var.log_analytics_workspace.sku
+  retention_in_days             = var.log_analytics_workspace.retention_in_days
+  identity                      = var.log_analytics_workspace.identity
+  local_authentication_disabled = var.log_analytics_workspace.local_authentication_disabled
 
   tags       = merge(local.tags, { resource_name = module.resource_names["log_analytics_workspace"].standard })
   depends_on = [module.resource_group]
@@ -179,7 +179,7 @@ module "diagnostic_setting" {
   for_each                   = var.diagnostic_settings
   name                       = module.resource_names["diagnostic_setting"].standard
   target_resource_id         = module.iothub.id
-  log_analytics_workspace_id = module.log_analytics_workspace[keys(var.log_analytics_workspace)[0]].id
+  log_analytics_workspace_id = module.log_analytics_workspace[0].id
   # log_analytics_destination_type = each.value.log_analytics_destination_type != null ? each.value.log_analytics_destination_type : "AzureDiagnostics"
   enabled_log = each.value.enabled_log
   metric      = each.value.metric
