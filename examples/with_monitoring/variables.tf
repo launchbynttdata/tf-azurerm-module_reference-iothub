@@ -38,12 +38,10 @@ variable "action_group" {
 # Monitor Metric Alert Properties
 variable "metric_alerts" {
   type = map(object({
-    # scopes             = list(string)
-    description = optional(string)
-    frequency   = optional(string)
-    severity    = optional(number)
-    enabled     = optional(bool)
-    # action_group_ids   = string
+    description        = optional(string)
+    frequency          = optional(string)
+    severity           = optional(number)
+    enabled            = optional(bool)
     webhook_properties = optional(map(string))
     criteria = optional(list(object({
       metric_namespace       = string
@@ -86,7 +84,6 @@ variable "diagnostic_settings" {
       category = optional(string)
       enabled  = optional(bool)
     }))
-    # log_analytics_destination_type = optional(string)
   }))
   default = {}
 }

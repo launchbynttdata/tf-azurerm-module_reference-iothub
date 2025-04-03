@@ -206,7 +206,7 @@ module "diagnostic_setting" {
   for_each                   = var.diagnostic_settings
   name                       = module.resource_names["diagnostic_setting"].standard
   target_resource_id         = module.iothub.id
-  log_analytics_workspace_id = module.log_analytics_workspace[0].id
+  log_analytics_workspace_id = coalesce(module.log_analytics_workspace[0].id, var.log_analytics_workspace_id)
   enabled_log                = each.value.enabled_log
   metric                     = each.value.metric
   depends_on                 = [module.resource_group]

@@ -14,7 +14,7 @@ module "iothub" {
   source   = "../.."
   location = var.location
 
-  action_group = try({
+  action_group = coalesce({
     name       = "example-action-group"
     short_name = "exag"
     arm_role_receivers = [
@@ -32,7 +32,6 @@ module "iothub" {
       }
   ] }, var.action_group)
 
-  # metric_alerts = merge(var.metric_alerts, {})
   metric_alerts = merge(var.metric_alerts, {
     iothub_d2c_throttling = {
       description = "Alert when D2C messages are being throttled"
@@ -81,7 +80,6 @@ module "iothub" {
     local_authentication_disabled = false
   }, var.log_analytics_workspace)
 
-  # diagnostic_settings = {}
   diagnostic_settings = merge(var.diagnostic_settings, {
     diagnostic_setting1 = {
       enabled_log = [

@@ -558,3 +558,9 @@ variable "log_analytics_workspace" {
   })
   default = null
 }
+
+variable "log_analytics_workspace_id" {
+  type        = string
+  description = "(Optional) The ID of the Log Analytics Workspace."
+  default     = null
+}
