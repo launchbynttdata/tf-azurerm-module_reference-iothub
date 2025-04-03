@@ -10,4 +10,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-locals {}
+locals {
+  #   resource_group_name    = module.resource_names["resource_group"].minimal_random_suffix
+  #   iothub_name            = module.resource_names["iothub"].minimal_random_suffix
+  #   evenhub_namespace_name = module.resource_names["eventhub"].minimal_random_suffix
+}

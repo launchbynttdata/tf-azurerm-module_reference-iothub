@@ -39,3 +39,15 @@ output "scope_id" {
   description = "The IoT Hub Device Provisioning Service Scope Id."
   value       = module.iothub_dps.id_scope
 }
+
+# debug
+# output "endpoints" {
+#   description = "The IoT Hub Endpoints."
+#   value = {
+#     for key, eventhub in var.eventhubs : key => {
+#       type              = eventhub.endpoint_type
+#       connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
+#     }
+#   }
+#   sensitive = true
+# }

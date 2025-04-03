@@ -34,3 +34,9 @@ output "iothub_dps_name" {
   description = "The IoT Hub Device Provisioning Service Name."
   value       = module.iothub.iothub_dps_name
 }
+
+# output "endpoints" {
+#   description = "The IoT Hub Endpoints."
+#   value       = module.iothub.endpoints
+#   sensitive   = true
+# }

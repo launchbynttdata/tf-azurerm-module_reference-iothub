@@ -51,18 +51,30 @@ module "iothub" {
   event_hub_partition_count     = var.event_hub_partition_count
   event_hub_retention_in_days   = var.event_hub_retention_in_days
   public_network_access_enabled = var.public_network_access_enabled
-  endpoints                     = var.endpoints
-  fallback_route                = var.fallback_route
-  file_uploads                  = var.file_uploads
-  identity                      = var.identity
-  network_rule_set              = var.network_rule_set
-  routes                        = var.routes
-  enrichments                   = var.enrichments
-  cloud_to_device               = var.cloud_to_device
-  consumer_groups               = var.consumer_groups
+  endpoints = merge(var.endpoints, {
+    for key, eventhub in var.eventhubs : key => {
+      type              = eventhub.endpoint_type
+      connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
+    }
+  })
+  fallback_route   = var.fallback_route
+  file_uploads     = var.file_uploads
+  identity         = var.identity
+  network_rule_set = var.network_rule_set
+  routes = merge(var.routes, {
+    for key, eventhub in var.eventhubs : key => {
+      endpoint_names = [key]
+      source         = eventhub.route.source
+      condition      = eventhub.route.condition
+      enabled        = eventhub.route.enabled
+    }
+  })
+  enrichments     = var.enrichments
+  cloud_to_device = var.cloud_to_device
+  consumer_groups = var.consumer_groups
 
   tags       = merge(local.tags, { resource_name = module.resource_names["iothub"].standard })
-  depends_on = [module.resource_group]
+  depends_on = [module.resource_group, module.eventhub, module.eventhub_auth_rules]
 }
 
 module "iothub_dps" {
@@ -117,6 +129,22 @@ module "eventhub" {
   status              = each.value.status
   capture_description = each.value.capture_description
   depends_on          = [module.resource_group]
+}
+
+module "eventhub_auth_rules" {
+  # source  = "terraform.registry.launch.nttdata.com/module_primitive/eventhub_authorization_rule/azurerm"
+  # version = "~> 1.0.0"
+  source = "git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-eventhub_authorization_rule.git//.?ref=fix/add-output"
+
+  for_each            = var.eventhubs
+  auth_rule_name      = each.key
+  namespace_name      = module.eventhub_namespace[0].namespace_name
+  eventhub_name       = each.key
+  resource_group_name = module.resource_group.name
+  listen              = each.value.auth_rules.listen
+  send                = each.value.auth_rules.send
+  manage              = each.value.auth_rules.manage
+  depends_on          = [module.resource_group, module.eventhub]
 }
 
 # metric alerts
@@ -183,4 +211,5 @@ module "diagnostic_setting" {
   # log_analytics_destination_type = each.value.log_analytics_destination_type != null ? each.value.log_analytics_destination_type : "AzureDiagnostics"
   enabled_log = each.value.enabled_log
   metric      = each.value.metric
+  depends_on  = [module.resource_group]
 }

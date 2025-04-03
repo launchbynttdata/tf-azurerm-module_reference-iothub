@@ -141,7 +141,7 @@ variable "endpoints" {
   description = <<EOF
   (Optional) A map of endpoints and their respective properties."
     map(object({
-      name (as map key)              = (Required) The name of the endpoint. The name must be unique across endpoint types. The following names are reserved: events, operationsMonitoringEvents, fileNotifications and $default.
+      name (as map key)          = (Required) The name of the endpoint. The name must be unique across endpoint types. The following names are reserved: events, operationsMonitoringEvents, fileNotifications and $default.
       type                       = (Required) The type of the endpoint. Possible values are AzureIotHub.StorageContainer, AzureIotHub.ServiceBusQueue, AzureIotHub.ServiceBusTopic or AzureIotHub.EventHub.
       connection_string          = (Optional) The connection string for the endpoint. This attribute is mandatory and can only be specified when authentication_type is keyBased.
       authentication_type        = (Optional) The type used to authenticate against the endpoint. Possible values are keyBased and identityBased. Defaults to keyBased.
@@ -427,9 +427,9 @@ variable "eventhub_namespace_capacity" {
   default     = 1
 }
 
-# eventhub Properties
+# Eventhub and Corresponding Iothub Properties
 variable "eventhubs" {
-  description = "A list of event hubs"
+  description = "A map of event hubs"
   type = map(object({
     partition_count   = optional(number)
     message_retention = optional(number)
@@ -445,6 +445,20 @@ variable "eventhubs" {
         archive_name_format = string
         storage_account_id  = string
       })
+    }))
+    auth_rules = optional(object({
+      listen = optional(bool, false)
+      send   = optional(bool, false)
+      manage = optional(bool, false)
+    }))
+    # iothub custom endpoint
+    endpoint_type = optional(string)
+    # iothub route
+    route = optional(object({
+      endpoint_name = optional(list(string))
+      source        = optional(string, "DeviceMessages")
+      condition     = optional(string)
+      enabled       = optional(bool, true)
     }))
   }))
   default = {}
