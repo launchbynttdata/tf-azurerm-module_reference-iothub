@@ -125,7 +125,7 @@ No providers.
 | <a name="module_iothub_dps"></a> [iothub\_dps](#module\_iothub\_dps) | terraform.registry.launch.nttdata.com/module_primitive/iothub_dps/azurerm | ~> 1.0 |
 | <a name="module_eventhub_namespace"></a> [eventhub\_namespace](#module\_eventhub\_namespace) | terraform.registry.launch.nttdata.com/module_primitive/eventhub_namespace/azurerm | ~> 1.0.0 |
 | <a name="module_eventhub"></a> [eventhub](#module\_eventhub) | terraform.registry.launch.nttdata.com/module_primitive/eventhub/azurerm | ~> 1.0.0 |
-| <a name="module_eventhub_auth_rules"></a> [eventhub\_auth\_rules](#module\_eventhub\_auth\_rules) | git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-eventhub_authorization_rule.git//. | fix/add-output |
+| <a name="module_eventhub_auth_rules"></a> [eventhub\_auth\_rules](#module\_eventhub\_auth\_rules) | terraform.registry.launch.nttdata.com/module_primitive/eventhub_authorization_rule/azurerm | ~> 1.0.0 |
 | <a name="module_monitor_action_group"></a> [monitor\_action\_group](#module\_monitor\_action\_group) | terraform.registry.launch.nttdata.com/module_primitive/monitor_action_group/azurerm | ~> 1.0.0 |
 | <a name="module_monitor_metric_alert"></a> [monitor\_metric\_alert](#module\_monitor\_metric\_alert) | terraform.registry.launch.nttdata.com/module_primitive/monitor_metric_alert/azurerm | ~> 1.1 |
 | <a name="module_log_analytics_workspace"></a> [log\_analytics\_workspace](#module\_log\_analytics\_workspace) | terraform.registry.launch.nttdata.com/module_primitive/log_analytics_workspace/azurerm | ~> 1.0 |

@@ -132,9 +132,8 @@ module "eventhub" {
 }
 
 module "eventhub_auth_rules" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/eventhub_authorization_rule/azurerm"
-  # version = "~> 1.0.0"
-  source = "git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-eventhub_authorization_rule.git//.?ref=fix/add-output"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/eventhub_authorization_rule/azurerm"
+  version = "~> 1.0.0"
 
   for_each            = var.eventhubs
   auth_rule_name      = each.key
@@ -208,8 +207,7 @@ module "diagnostic_setting" {
   name                       = module.resource_names["diagnostic_setting"].standard
   target_resource_id         = module.iothub.id
   log_analytics_workspace_id = module.log_analytics_workspace[0].id
-  # log_analytics_destination_type = each.value.log_analytics_destination_type != null ? each.value.log_analytics_destination_type : "AzureDiagnostics"
-  enabled_log = each.value.enabled_log
-  metric      = each.value.metric
-  depends_on  = [module.resource_group]
+  enabled_log                = each.value.enabled_log
+  metric                     = each.value.metric
+  depends_on                 = [module.resource_group]
 }
