@@ -10,25 +10,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-module "iothub" {
-  source   = "../.."
-  location = var.location
-  eventhubs = {
-    eventhub1 = {
-      partition_count   = 2
-      message_retention = 1
-      status            = "Active"
-      auth_rules = {
-        listen = true
-        send   = true
-        manage = false
-      }
-      endpoint_type = "AzureIotHub.EventHub"
-      route = {
-        source    = "DeviceMessages"
-        condition = "true"
-        enabled   = true
-      }
-    }
-  }
-}
+locals {}

@@ -35,7 +35,7 @@ module "iothub" {
   metric_alerts = merge(var.metric_alerts, {
     iothub_d2c_throttling = {
       description = "Alert when D2C messages are being throttled"
-      frequency   = "PT5M" # 5 minutes
+      frequency   = "PT5M"
       severity    = 2
       enabled     = true
       criteria = [{
@@ -44,30 +44,20 @@ module "iothub" {
         aggregation      = "Total"
         operator         = "GreaterThan"
         threshold        = 100
-        dimensions = [{
-          name     = "IotHubName"
-          operator = "Include"
-          values   = ["*"]
-        }]
       }]
     },
-    iothub_connected_devices = {
-      description = "Alert on connected device count changes"
-      frequency   = "PT15M" # 15 minutes
+    iothub_total_messages_used = {
+      description = "Alert on Total number of messages used"
+      frequency   = "PT5M"
       severity    = 3
       enabled     = true
       criteria    = []
       dynamic_criteria = {
         metric_namespace  = "Microsoft.Devices/IotHubs"
-        metric_name       = "devices.totalConnected"
-        aggregation       = "Average"
+        metric_name       = "dailyMessageQuotaUsed"
+        aggregation       = "Maximum"
         operator          = "GreaterOrLessThan"
         alert_sensitivity = "Medium"
-        dimensions = [{
-          name     = "IotHubName"
-          operator = "Include"
-          values   = ["*"]
-        }]
       }
     }
   })
@@ -89,11 +79,11 @@ module "iothub" {
         },
         {
           category_group = "allLogs"
-          category       = "Operations"
+          category       = "Connections"
         }
       ]
       metric = {
-        category = "IoTHubMetrics"
+        category = "AllMetrics"
         enabled  = true
       }
     }
