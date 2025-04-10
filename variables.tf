@@ -11,6 +11,11 @@
 // limitations under the License.
 
 # Common Properties
+variable "resource_group_name" {
+  description = "target resource group resource mask"
+  type        = string
+}
+
 variable "location" {
   type        = string
   description = "(Required) Specifies the supported Azure location where the resource exists."
@@ -489,15 +494,20 @@ variable "action_group" {
   default = null
 }
 
+variable "action_group_ids" {
+  description = "A list of action group IDs."
+  type        = list(string)
+  default     = []
+}
+
 # Monitor Metric Alert Properties
 variable "metric_alerts" {
   type = map(object({
-    # scopes             = list(string)
-    description = optional(string)
-    frequency   = optional(string)
-    severity    = optional(number)
-    enabled     = optional(bool)
-    # action_group_ids   = string
+    description        = string
+    action_groups      = optional(set(string), [])
+    frequency          = optional(string, "PT1M")
+    severity           = optional(number, 3)
+    enabled            = optional(bool, true)
     webhook_properties = optional(map(string))
     criteria = optional(list(object({
       metric_namespace       = string
@@ -510,7 +520,7 @@ variable "metric_alerts" {
         name     = string
         operator = string
         values   = list(string)
-      })), [])
+      })))
     })))
     dynamic_criteria = optional(object({
       metric_namespace       = string
@@ -524,10 +534,16 @@ variable "metric_alerts" {
         name     = string
         operator = string
         values   = list(string)
-      })), [])
+      })))
     }))
   }))
   default = {}
+  validation {
+    condition = alltrue(
+      [for alert in var.metric_alerts : !(alert.criteria == null && alert.dynamic_criteria == null)],
+    )
+    error_message = "At least one of 'criteria', 'dynamic_criteria' must be defined for all metric alerts"
+  }
 }
 
 variable "diagnostic_settings" {
@@ -536,11 +552,10 @@ variable "diagnostic_settings" {
       category_group = optional(string, "allLogs")
       category       = optional(string, null)
     })))
-    metric = optional(object({
-      category = optional(string)
+    metrics = optional(list(object({
+      category = string
       enabled  = optional(bool)
-    }))
-    # log_analytics_destination_type = optional(string)
+    })))
   }))
   default = {}
 }
