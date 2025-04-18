@@ -12,6 +12,4 @@
 
 locals {
   resource_group_name = module.resource_names["resource_group"].minimal_random_suffix
-  # iothub_name            = module.resource_names["iothub"].minimal_random_suffix
-  # evenhub_namespace_name = module.resource_names["eventhub_namespace"].minimal_random_suffix
 }

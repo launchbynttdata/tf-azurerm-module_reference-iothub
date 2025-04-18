@@ -12,6 +12,4 @@
 
 locals {
   resource_group_name = module.resource_names["resource_group"].minimal_random_suffix
-  # iothub_name         = module.resource_names["iothub"].minimal_random_suffix
-  # dps_name            = module.resource_names["device_provisioning_service"].minimal_random_suffix
 }
