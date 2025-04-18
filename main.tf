@@ -200,9 +200,8 @@ module "log_analytics_workspace" {
 }
 
 module "diagnostic_setting" {
-  # source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_diagnostic_setting/azurerm"
-  # version = "~> 1.0"
-  source = "git::https://github.com/launchbynttdata/tf-azurerm-module_primitive-monitor_diagnostic_setting.git//.?ref=feature!/update-var-metric"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_diagnostic_setting/azurerm"
+  version = "~> 3.0"
 
   for_each                   = var.diagnostic_settings
   name                       = each.key
