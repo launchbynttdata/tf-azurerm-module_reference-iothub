@@ -436,9 +436,9 @@ variable "eventhub_namespace_capacity" {
 variable "eventhubs" {
   description = "A map of event hubs"
   type = map(object({
-    partition_count   = optional(number)
-    message_retention = optional(number)
-    status            = optional(string)
+    partition_count   = optional(number, 4)
+    message_retention = optional(number, 1)
+    status            = optional(string, "Active")
     capture_description = optional(object({
       enabled             = bool
       encoding            = string

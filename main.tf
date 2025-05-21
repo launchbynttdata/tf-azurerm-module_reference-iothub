@@ -68,6 +68,7 @@ module "iothub" {
       condition      = eventhub.route.condition
       enabled        = eventhub.route.enabled
     }
+    if eventhub.route != null
   })
   enrichments     = var.enrichments
   cloud_to_device = var.cloud_to_device
