@@ -455,7 +455,11 @@ variable "eventhubs" {
       listen = optional(bool, false)
       send   = optional(bool, false)
       manage = optional(bool, false)
-    }))
+      }), {
+      listen = false
+      send   = false
+      manage = false
+    })
     # iothub custom endpoint
     endpoint_type = optional(string)
     # iothub route
