@@ -56,6 +56,7 @@ module "iothub" {
       type              = eventhub.endpoint_type
       connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
     }
+    if eventhub.endpoint_type != null
   })
   fallback_route   = var.fallback_route
   file_uploads     = var.file_uploads
