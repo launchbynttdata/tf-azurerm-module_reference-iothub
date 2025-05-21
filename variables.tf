@@ -464,10 +464,9 @@ variable "eventhubs" {
     endpoint_type = optional(string, "AzureIotHub.EventHub")
     # iothub route
     route = optional(object({
-      endpoint_name = optional(list(string))
-      source        = optional(string, "DeviceMessages")
-      condition     = optional(string)
-      enabled       = optional(bool, true)
+      source    = optional(string, "DeviceMessages")
+      condition = optional(string)
+      enabled   = optional(bool, true)
     }))
   }))
   default = {}
