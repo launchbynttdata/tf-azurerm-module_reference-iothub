@@ -452,12 +452,12 @@ variable "eventhubs" {
       })
     }))
     auth_rules = optional(object({
-      listen = optional(bool, false)
-      send   = optional(bool, false)
+      listen = optional(bool, true)
+      send   = optional(bool, true)
       manage = optional(bool, false)
       }), {
-      listen = false
-      send   = false
+      listen = true
+      send   = true
       manage = false
     })
     # iothub custom endpoint
