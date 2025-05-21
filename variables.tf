@@ -461,7 +461,7 @@ variable "eventhubs" {
       manage = false
     })
     # iothub custom endpoint
-    endpoint_type = optional(string)
+    endpoint_type = optional(string, "AzureIotHub.EventHub")
     # iothub route
     route = optional(object({
       endpoint_name = optional(list(string))
