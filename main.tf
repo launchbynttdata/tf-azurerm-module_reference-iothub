@@ -56,6 +56,7 @@ module "iothub" {
       type              = eventhub.endpoint_type
       connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
     }
+    if eventhub.endpoint_type != null
   })
   fallback_route   = var.fallback_route
   file_uploads     = var.file_uploads
@@ -68,6 +69,7 @@ module "iothub" {
       condition      = eventhub.route.condition
       enabled        = eventhub.route.enabled
     }
+    if eventhub.route != null
   })
   enrichments     = var.enrichments
   cloud_to_device = var.cloud_to_device

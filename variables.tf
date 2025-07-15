@@ -436,9 +436,9 @@ variable "eventhub_namespace_capacity" {
 variable "eventhubs" {
   description = "A map of event hubs"
   type = map(object({
-    partition_count   = optional(number)
-    message_retention = optional(number)
-    status            = optional(string)
+    partition_count   = optional(number, 4)
+    message_retention = optional(number, 1)
+    status            = optional(string, "Active")
     capture_description = optional(object({
       enabled             = bool
       encoding            = string
@@ -452,18 +452,21 @@ variable "eventhubs" {
       })
     }))
     auth_rules = optional(object({
-      listen = optional(bool, false)
-      send   = optional(bool, false)
+      listen = optional(bool, true)
+      send   = optional(bool, true)
       manage = optional(bool, false)
-    }))
+      }), {
+      listen = true
+      send   = true
+      manage = false
+    })
     # iothub custom endpoint
-    endpoint_type = optional(string)
+    endpoint_type = optional(string, "AzureIotHub.EventHub")
     # iothub route
     route = optional(object({
-      endpoint_name = optional(list(string))
-      source        = optional(string, "DeviceMessages")
-      condition     = optional(string)
-      enabled       = optional(bool, true)
+      source    = optional(string, "DeviceMessages")
+      condition = optional(string)
+      enabled   = optional(bool, true)
     }))
   }))
   default = {}
