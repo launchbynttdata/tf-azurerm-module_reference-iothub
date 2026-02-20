@@ -576,9 +576,13 @@ variable "log_analytics_workspace" {
   })
   default = null
 }
-
 variable "log_analytics_workspace_id" {
   type        = string
   description = "(Optional) The ID of the Log Analytics Workspace."
   default     = null
+}
+variable "min_tls_version" {
+  description = "Minimum TLS version for IoTHub"
+  type        = string
+  default     = "1.2"
 }

@@ -74,6 +74,7 @@ module "iothub" {
   enrichments     = var.enrichments
   cloud_to_device = var.cloud_to_device
   consumer_groups = var.consumer_groups
+  min_tls_version = var.min_tls_version
 
   tags       = merge(local.tags, { resource_name = module.resource_names["iothub"].standard })
   depends_on = [module.resource_group, module.eventhub, module.eventhub_auth_rules]

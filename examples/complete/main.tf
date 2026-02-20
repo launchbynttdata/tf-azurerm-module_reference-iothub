@@ -38,6 +38,7 @@ module "iothub" {
   source              = "../.."
   resource_group_name = module.resource_group.name
   location            = var.location
+  min_tls_version     = var.min_tls_version
   eventhubs = {
     eventhub1 = {
       partition_count   = 2
@@ -56,4 +57,5 @@ module "iothub" {
       }
     }
   }
+  depends_on = [module.resource_group]
 }

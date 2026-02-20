@@ -76,3 +76,7 @@ variable "class_env" {
   description = "(Required) Environment where resource is going to be deployed. For example. dev, qa, uat"
   default     = "dev"
 }
+variable "min_tls_version" {
+  description = "Minimum TLS version for IoTHub"
+  type        = string
+}
