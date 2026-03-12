@@ -12,7 +12,7 @@
 
 output "resource_group_name" {
   description = "The resource group for the reference Iot Hub."
-  value       = module.resource_names["resource_group"].standard
+  value       = try(module.resource_group.name, null)
 }
 
 output "iothub_id" {
