@@ -206,19 +206,11 @@ module "diagnostic_setting" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_diagnostic_setting/azurerm"
   version = "~> 3.0"
 
-  for_each = var.diagnostic_settings
-
-  name               = each.key
-  target_resource_id = module.iothub.id
-
+  for_each                   = var.diagnostic_settings
+  name                       = each.key
+  target_resource_id         = module.iothub.id
   log_analytics_workspace_id = coalesce(try(module.log_analytics_workspace[0].id, null), var.log_analytics_workspace_id)
-
-  enabled_log = try(each.value.enabled_log, [])
-  metrics     = try(each.value.metrics, [])
-
-  depends_on = [
-    module.resource_group,
-    module.iothub,
-    module.log_analytics_workspace
-  ]
+  enabled_log                = try(each.value.enabled_log, [])
+  metrics                    = try(each.value.metrics, [])
+  depends_on                 = [module.resource_group, module.iothub, module.log_analytics_workspace]
 }
