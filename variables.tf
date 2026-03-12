@@ -14,6 +14,7 @@
 variable "resource_group_name" {
   description = "target resource group resource mask"
   type        = string
+  default     = null
 }
 
 variable "location" {
