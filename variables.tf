@@ -14,6 +14,7 @@
 variable "resource_group_name" {
   description = "target resource group resource mask"
   type        = string
+  default     = null
 }
 
 variable "location" {
@@ -334,13 +335,11 @@ variable "consumer_groups" {
   (Optional) A map of consumer groups and their respective properties."
     map(object({
       name (as map key)      = (Required) The name of this Consumer Group.
-      resource_group_name    = (Required) The name of the resource group that contains the IoT hub.
       eventhub_endpoint_name = (Required) The name of the Event Hub-compatible endpoint in the IoT hub.
     }))
   EOF
   type = map(object({
     eventhub_endpoint_name = string
-    resource_group_name    = string
   }))
   default = {}
 }

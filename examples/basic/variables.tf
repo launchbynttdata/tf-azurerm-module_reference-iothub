@@ -16,29 +16,6 @@ variable "location" {
   default     = "eastus"
 }
 
-variable "resource_names_map" {
-  description = "A map of key to resource_name that will be used by tf-launch-module_library-resource_name to generate resource names"
-  type = map(object({
-    name       = string
-    max_length = optional(number, 60)
-  }))
-
-  default = {
-    resource_group = {
-      name       = "rg"
-      max_length = 80
-    }
-    iothub = {
-      name       = "iothub"
-      max_length = 80
-    }
-    device_provisioning_service = {
-      name       = "dps"
-      max_length = 80
-    }
-  }
-}
-
 # module resource_names properties
 variable "instance_env" {
   type        = number
