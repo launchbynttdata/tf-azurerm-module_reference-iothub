@@ -99,7 +99,7 @@ module "iothub_dps" {
   ip_filter_rules = var.ip_filter_rules
 
   tags       = merge(local.tags, { resource_name = module.resource_names["device_provisioning_service"].standard })
-  depends_on = [module.resource_group]
+  depends_on = [module.resource_group, module.iothub]
 }
 
 module "eventhub_namespace" {
@@ -209,8 +209,8 @@ module "diagnostic_setting" {
   for_each                   = var.diagnostic_settings
   name                       = each.key
   target_resource_id         = module.iothub.id
-  log_analytics_workspace_id = coalesce(module.log_analytics_workspace[0].id, var.log_analytics_workspace_id)
-  enabled_log                = each.value.enabled_log
-  metrics                    = each.value.metrics
-  depends_on                 = [module.resource_group]
+  log_analytics_workspace_id = coalesce(try(module.log_analytics_workspace[0].id, null), var.log_analytics_workspace_id)
+  enabled_log                = try(each.value.enabled_log, [])
+  metrics                    = try(each.value.metrics, [])
+  depends_on                 = [module.resource_group, module.iothub, module.log_analytics_workspace]
 }
