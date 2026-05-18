@@ -77,8 +77,10 @@ variable "metric_alerts" {
   type = map(object({
     description        = optional(string)
     frequency          = optional(string)
+    window_size        = optional(string)
     severity           = optional(number)
     enabled            = optional(bool)
+    auto_mitigate      = optional(bool)
     webhook_properties = optional(map(string))
     criteria = optional(list(object({
       metric_namespace       = string

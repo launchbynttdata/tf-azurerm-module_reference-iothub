@@ -508,8 +508,10 @@ variable "metric_alerts" {
     description        = string
     action_groups      = optional(set(string), [])
     frequency          = optional(string, "PT1M")
+    window_size        = optional(string, "PT5M")
     severity           = optional(number, 3)
     enabled            = optional(bool, true)
+    auto_mitigate      = optional(bool, true)
     webhook_properties = optional(map(string))
     criteria = optional(list(object({
       metric_namespace       = string
