@@ -174,8 +174,10 @@ module "monitor_metric_alert" {
   scopes              = [module.iothub.id]
   description         = each.value.description
   frequency           = each.value.frequency
+  window_size         = each.value.window_size
   severity            = each.value.severity
   enabled             = each.value.enabled
+  auto_mitigate       = each.value.auto_mitigate
   action_group_ids    = concat([module.monitor_action_group[0].action_group_id], var.action_group_ids)
   webhook_properties  = each.value.webhook_properties
   criteria            = each.value.criteria
