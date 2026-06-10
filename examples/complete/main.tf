@@ -20,6 +20,17 @@ module "iothub" {
   logical_product_family  = var.logical_product_family
   logical_product_service = var.logical_product_service
 
+  public_network_access_enabled                                   = var.public_network_access_enabled
+  eventhub_namespace_public_network_access_enabled                = var.eventhub_namespace_public_network_access_enabled
+  eventhub_namespace_network_rule_set                             = var.eventhub_namespace_network_rule_set
+  create_eventhub_namespace_private_endpoint                      = var.create_eventhub_namespace_private_endpoint
+  eventhub_namespace_private_endpoint_subnet_id                   = var.eventhub_namespace_private_endpoint_subnet_id
+  eventhub_namespace_private_endpoint_private_dns_zone_group_name = var.eventhub_namespace_private_endpoint_private_dns_zone_group_name
+  eventhub_namespace_private_endpoint_private_dns_zone_ids        = var.eventhub_namespace_private_endpoint_private_dns_zone_ids
+  eventhub_namespace_private_endpoint_is_manual_connection        = var.eventhub_namespace_private_endpoint_is_manual_connection
+  eventhub_namespace_private_endpoint_subresource_names           = var.eventhub_namespace_private_endpoint_subresource_names
+  eventhub_namespace_private_endpoint_request_message             = var.eventhub_namespace_private_endpoint_request_message
+
   min_tls_version = var.min_tls_version
   eventhubs = {
     eventhub1 = {

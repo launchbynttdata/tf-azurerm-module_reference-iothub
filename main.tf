@@ -104,7 +104,7 @@ module "iothub_dps" {
 
 module "eventhub_namespace" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/eventhub_namespace/azurerm"
-  version = "~> 1.0.0"
+  version = "1.1.4"
 
   count               = length(var.eventhubs) > 0 ? 1 : 0
   namespace_name      = module.resource_names["eventhub_namespace"].standard
@@ -113,10 +113,33 @@ module "eventhub_namespace" {
 
   sku                           = var.eventhub_namespace_sku
   capacity                      = var.eventhub_namespace_capacity
-  public_network_access_enabled = var.public_network_access_enabled
+  public_network_access_enabled = var.eventhub_namespace_public_network_access_enabled
+  network_rule_set              = var.eventhub_namespace_network_rule_set
 
   tags       = merge(local.tags, { resource_name = module.resource_names["eventhub_namespace"].standard })
   depends_on = [module.resource_group]
+}
+
+module "eventhub_namespace_private_endpoint" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/private_endpoint/azurerm"
+  version = "~> 1.0"
+
+  count = length(var.eventhubs) > 0 && var.create_eventhub_namespace_private_endpoint ? 1 : 0
+
+  endpoint_name                   = "${module.resource_names["eventhub_namespace"].standard}-pep"
+  resource_group_name             = coalesce(var.resource_group_name, module.resource_names["resource_group"].standard)
+  region                          = var.location
+  subnet_id                       = var.eventhub_namespace_private_endpoint_subnet_id
+  private_dns_zone_group_name     = var.eventhub_namespace_private_endpoint_private_dns_zone_group_name
+  private_dns_zone_ids            = var.eventhub_namespace_private_endpoint_private_dns_zone_ids
+  is_manual_connection            = var.eventhub_namespace_private_endpoint_is_manual_connection
+  private_connection_resource_id  = module.eventhub_namespace[0].namespace_id
+  subresource_names               = var.eventhub_namespace_private_endpoint_subresource_names
+  request_message                 = var.eventhub_namespace_private_endpoint_request_message
+  private_service_connection_name = "${module.resource_names["eventhub_namespace"].standard}-psc"
+
+  tags       = merge(local.tags, { resource_name = "${module.resource_names["eventhub_namespace"].standard}-pep" })
+  depends_on = [module.eventhub_namespace]
 }
 
 module "eventhub" {
