@@ -130,7 +130,7 @@ module "eventhub_namespace_private_endpoint" {
   resource_group_name             = coalesce(var.resource_group_name, module.resource_names["resource_group"].standard)
   region                          = var.location
   subnet_id                       = var.eventhub_namespace_private_endpoint_subnet_id
-  private_dns_zone_group_name     = var.eventhub_namespace_private_endpoint_private_dns_zone_group_name
+  private_dns_zone_group_name     = coalesce(var.eventhub_namespace_private_endpoint_private_dns_zone_group_name, "")
   private_dns_zone_ids            = var.eventhub_namespace_private_endpoint_private_dns_zone_ids
   is_manual_connection            = var.eventhub_namespace_private_endpoint_is_manual_connection
   private_connection_resource_id  = module.eventhub_namespace[0].namespace_id

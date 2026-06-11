@@ -64,15 +64,15 @@ variable "public_network_access_enabled" {
 }
 
 variable "eventhub_namespace_public_network_access_enabled" {
-  description = "Enable EventHub Namespace public endpoint while enforcing restrictive network rules."
+  description = "Enable EventHub Namespace public endpoint."
   type        = bool
   default     = true
 }
 
 variable "eventhub_namespace_network_rule_set" {
-  description = "Restrict EventHub Namespace public access to trusted Azure services only."
+  description = "EventHub Namespace network rule set. Default keeps public access enabled with Allow."
   type = object({
-    default_action                 = optional(string, "Deny")
+    default_action                 = optional(string, "Allow")
     trusted_service_access_enabled = optional(bool, true)
     ip_rules = optional(list(object({
       ip_mask = string
@@ -84,7 +84,7 @@ variable "eventhub_namespace_network_rule_set" {
     })), [])
   })
   default = {
-    default_action                 = "Deny"
+    default_action                 = "Allow"
     trusted_service_access_enabled = true
     ip_rules                       = []
     virtual_network_rules          = []
@@ -106,7 +106,7 @@ variable "eventhub_namespace_private_endpoint_subnet_id" {
 variable "eventhub_namespace_private_endpoint_private_dns_zone_group_name" {
   description = "Private DNS zone group name for EventHub Namespace private endpoint."
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "eventhub_namespace_private_endpoint_private_dns_zone_ids" {
