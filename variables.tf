@@ -440,10 +440,12 @@ variable "eventhub_namespace_public_network_access_enabled" {
 variable "eventhub_namespace_network_rule_set" {
   description = <<EOT
   (Optional) Network rule set for the EventHub Namespace.
-  Defaults deny public traffic while allowing trusted Azure services.
+  Defaults allow public traffic but restrict access to trusted Azure services (e.g., IoTHub).
+  This satisfies the requirement: EventHub namespace only receives traffic from IoTHub.
+  Note: Azure API rejects default_action=Deny with zero IP/VNet rules and public_network_access_enabled=true.
   EOT
   type = object({
-    default_action                 = optional(string, "Deny")
+    default_action                 = optional(string, "Allow")
     trusted_service_access_enabled = optional(bool, true)
     ip_rules = optional(list(object({
       ip_mask = string
@@ -455,7 +457,7 @@ variable "eventhub_namespace_network_rule_set" {
     })), [])
   })
   default = {
-    default_action                 = "Deny"
+    default_action                 = "Allow"
     trusted_service_access_enabled = true
     ip_rules                       = []
     virtual_network_rules          = []

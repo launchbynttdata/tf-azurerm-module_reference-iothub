@@ -4,7 +4,7 @@ public_network_access_enabled                    = true
 eventhub_namespace_public_network_access_enabled = true
 
 eventhub_namespace_network_rule_set = {
-  default_action                 = "Allow"
+  default_action                 = "Deny"
   trusted_service_access_enabled = true
   ip_rules                       = []
   virtual_network_rules          = []
