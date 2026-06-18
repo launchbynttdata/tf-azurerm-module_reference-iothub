@@ -431,6 +431,83 @@ variable "eventhub_namespace_capacity" {
   default     = 1
 }
 
+variable "eventhub_namespace_public_network_access_enabled" {
+  type        = bool
+  description = "(Optional) Is the EventHub Namespace accessible from a public network? Defaults to true so trusted Azure services can connect."
+  default     = true
+}
+
+variable "eventhub_namespace_network_rule_set" {
+  description = <<EOT
+  (Optional) Network rule set for the EventHub Namespace.
+  Default posture keeps public Event Hub access enabled (`default_action = "Allow"`).
+  `trusted_service_access_enabled = true` permits trusted Azure services, but does not block other public clients.
+  To restrict access, set `default_action = "Deny"` and provide explicit `ip_rules` and/or `virtual_network_rules`,
+  or disable public access via `eventhub_namespace_public_network_access_enabled = false`.
+  Note: Azure API rejects default_action=Deny with zero IP/VNet rules and public_network_access_enabled=true.
+  EOT
+  type = object({
+    default_action                 = optional(string, "Allow")
+    trusted_service_access_enabled = optional(bool, true)
+    ip_rules = optional(list(object({
+      ip_mask = string
+      action  = optional(string, "Allow")
+    })), [])
+    virtual_network_rules = optional(list(object({
+      subnet_id                                       = string
+      ignore_missing_virtual_network_service_endpoint = optional(bool, false)
+    })), [])
+  })
+  default = {
+    default_action                 = "Allow"
+    trusted_service_access_enabled = true
+    ip_rules                       = []
+    virtual_network_rules          = []
+  }
+}
+
+variable "create_eventhub_namespace_private_endpoint" {
+  description = "Whether to create a private endpoint for the EventHub Namespace."
+  type        = bool
+  default     = false
+}
+
+variable "eventhub_namespace_private_endpoint_subnet_id" {
+  description = "Resource ID of the subnet where the EventHub Namespace private endpoint is created."
+  type        = string
+  default     = null
+}
+
+variable "eventhub_namespace_private_endpoint_private_dns_zone_group_name" {
+  description = "Name of the private DNS zone group for the EventHub Namespace private endpoint."
+  type        = string
+  default     = ""
+}
+
+variable "eventhub_namespace_private_endpoint_private_dns_zone_ids" {
+  description = "List of private DNS zone IDs for the EventHub Namespace private endpoint."
+  type        = list(string)
+  default     = []
+}
+
+variable "eventhub_namespace_private_endpoint_is_manual_connection" {
+  description = "Whether the EventHub Namespace private endpoint connection requires manual approval."
+  type        = bool
+  default     = false
+}
+
+variable "eventhub_namespace_private_endpoint_subresource_names" {
+  description = "Subresource names for the EventHub Namespace private endpoint."
+  type        = list(string)
+  default     = ["namespace"]
+}
+
+variable "eventhub_namespace_private_endpoint_request_message" {
+  description = "Request message used when manual approval is enabled for the EventHub Namespace private endpoint."
+  type        = string
+  default     = null
+}
+
 # Eventhub and Corresponding Iothub Properties
 variable "eventhubs" {
   description = "A map of event hubs"

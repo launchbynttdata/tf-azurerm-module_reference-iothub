@@ -39,3 +39,18 @@ output "scope_id" {
   description = "The IoT Hub Device Provisioning Service Scope Id."
   value       = module.iothub_dps.id_scope
 }
+
+output "eventhub_namespace_id" {
+  description = "The EventHub Namespace Id used as IoTHub custom endpoint backend."
+  value       = try(module.eventhub_namespace[0].namespace_id, null)
+}
+
+output "eventhub_namespace_name" {
+  description = "The EventHub Namespace Name used as IoTHub custom endpoint backend."
+  value       = try(module.eventhub_namespace[0].namespace_name, null)
+}
+
+output "eventhub_namespace_private_endpoint_id" {
+  description = "The private endpoint id for EventHub Namespace access from private networks such as AKS."
+  value       = try(module.eventhub_namespace_private_endpoint[0].id, null)
+}
