@@ -132,3 +132,45 @@ variable "eventhub_namespace_private_endpoint_request_message" {
   type        = string
   default     = null
 }
+
+variable "create_iothub_private_endpoint" {
+  description = "Create a private endpoint for IoT Hub."
+  type        = bool
+  default     = false
+}
+
+variable "iothub_private_endpoint_subnet_id" {
+  description = "Subnet resource ID for IoT Hub private endpoint. Required when private endpoint creation is enabled."
+  type        = string
+  default     = null
+}
+
+variable "iothub_private_endpoint_private_dns_zone_group_name" {
+  description = "Private DNS zone group name for IoT Hub private endpoint."
+  type        = string
+  default     = ""
+}
+
+variable "iothub_private_endpoint_private_dns_zone_ids" {
+  description = "Private DNS zone IDs for IoT Hub private endpoint."
+  type        = list(string)
+  default     = []
+}
+
+variable "iothub_private_endpoint_is_manual_connection" {
+  description = "Whether IoT Hub private endpoint requires manual approval."
+  type        = bool
+  default     = false
+}
+
+variable "iothub_private_endpoint_subresource_names" {
+  description = "Subresource names for IoT Hub private endpoint."
+  type        = list(string)
+  default     = ["iotHub"]
+}
+
+variable "iothub_private_endpoint_request_message" {
+  description = "Request message for manual private endpoint approval for IoT Hub."
+  type        = string
+  default     = null
+}

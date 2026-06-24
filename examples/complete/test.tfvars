@@ -11,3 +11,6 @@ eventhub_namespace_network_rule_set = {
 }
 
 create_eventhub_namespace_private_endpoint = false
+
+create_iothub_private_endpoint            = false
+iothub_private_endpoint_subresource_names = ["iotHub"]
