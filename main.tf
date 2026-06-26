@@ -142,6 +142,28 @@ module "eventhub_namespace_private_endpoint" {
   depends_on = [module.eventhub_namespace]
 }
 
+module "iothub_private_endpoint" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/private_endpoint/azurerm"
+  version = "~> 1.0"
+
+  count = var.create_iothub_private_endpoint ? 1 : 0
+
+  endpoint_name                   = "${module.resource_names["iothub"].standard}-pep"
+  resource_group_name             = coalesce(var.resource_group_name, module.resource_names["resource_group"].standard)
+  region                          = var.location
+  subnet_id                       = var.iothub_private_endpoint_subnet_id
+  private_dns_zone_group_name     = coalesce(var.iothub_private_endpoint_private_dns_zone_group_name, "")
+  private_dns_zone_ids            = var.iothub_private_endpoint_private_dns_zone_ids
+  is_manual_connection            = var.iothub_private_endpoint_is_manual_connection
+  private_connection_resource_id  = module.iothub.id
+  subresource_names               = var.iothub_private_endpoint_subresource_names
+  request_message                 = var.iothub_private_endpoint_request_message
+  private_service_connection_name = "${module.resource_names["iothub"].standard}-psc"
+
+  tags       = merge(local.tags, { resource_name = "${module.resource_names["iothub"].standard}-pep" })
+  depends_on = [module.iothub]
+}
+
 module "eventhub" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/eventhub/azurerm"
   version = "~> 1.0.0"

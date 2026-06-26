@@ -508,6 +508,49 @@ variable "eventhub_namespace_private_endpoint_request_message" {
   default     = null
 }
 
+# IoT Hub Private Endpoint Configuration
+variable "create_iothub_private_endpoint" {
+  description = "(Optional) Whether to create a private endpoint for the IoT Hub. Defaults to false."
+  type        = bool
+  default     = false
+}
+
+variable "iothub_private_endpoint_subnet_id" {
+  description = "(Optional) The subnet ID where the IoT Hub private endpoint will be created."
+  type        = string
+  default     = null
+}
+
+variable "iothub_private_endpoint_private_dns_zone_group_name" {
+  description = "(Optional) The name of the private DNS zone group for the IoT Hub private endpoint. Defaults to empty string."
+  type        = string
+  default     = null
+}
+
+variable "iothub_private_endpoint_private_dns_zone_ids" {
+  description = "(Optional) List of private DNS zone IDs to associate with the IoT Hub private endpoint."
+  type        = list(string)
+  default     = []
+}
+
+variable "iothub_private_endpoint_is_manual_connection" {
+  description = "(Optional) Whether to require manual approval for the IoT Hub private endpoint connection. Defaults to false."
+  type        = bool
+  default     = false
+}
+
+variable "iothub_private_endpoint_subresource_names" {
+  description = "(Optional) Subresource names for the IoT Hub private endpoint. Defaults to ['iotHub'] which covers both device-messaging and the built-in Service Bus endpoint."
+  type        = list(string)
+  default     = ["iotHub"]
+}
+
+variable "iothub_private_endpoint_request_message" {
+  description = "(Optional) Request message used when manual approval is enabled for the IoT Hub private endpoint."
+  type        = string
+  default     = null
+}
+
 # Eventhub and Corresponding Iothub Properties
 variable "eventhubs" {
   description = "A map of event hubs"

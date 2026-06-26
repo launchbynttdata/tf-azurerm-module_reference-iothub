@@ -30,6 +30,13 @@ module "iothub" {
   eventhub_namespace_private_endpoint_is_manual_connection        = var.eventhub_namespace_private_endpoint_is_manual_connection
   eventhub_namespace_private_endpoint_subresource_names           = var.eventhub_namespace_private_endpoint_subresource_names
   eventhub_namespace_private_endpoint_request_message             = var.eventhub_namespace_private_endpoint_request_message
+  create_iothub_private_endpoint                                  = var.create_iothub_private_endpoint
+  iothub_private_endpoint_subnet_id                               = var.iothub_private_endpoint_subnet_id
+  iothub_private_endpoint_private_dns_zone_group_name             = var.iothub_private_endpoint_private_dns_zone_group_name
+  iothub_private_endpoint_private_dns_zone_ids                    = var.iothub_private_endpoint_private_dns_zone_ids
+  iothub_private_endpoint_is_manual_connection                    = var.iothub_private_endpoint_is_manual_connection
+  iothub_private_endpoint_subresource_names                       = var.iothub_private_endpoint_subresource_names
+  iothub_private_endpoint_request_message                         = var.iothub_private_endpoint_request_message
 
   min_tls_version = var.min_tls_version
   eventhubs = {
