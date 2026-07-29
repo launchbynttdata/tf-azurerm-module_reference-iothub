@@ -83,16 +83,13 @@ module "iothub" {
   min_tls_version = var.min_tls_version
 
   tags       = merge(local.tags, { resource_name = module.resource_names["iothub"].standard })
-  depends_on = [module.resource_group, module.eventhub, module.eventhub_auth_rules]
+  depends_on = [module.resource_group, module.eventhub, module.eventhub_auth_rules, module.iothub_eventhub_data_sender]
 }
-
 data "azurerm_iothub" "iothub_identity" {
   count = var.grant_iothub_eventhub_data_sender_role && var.identity.identity_type == "SystemAssigned" ? 1 : 0
 
-  name                = module.iothub.name
+  name                = module.resource_names["iothub"].standard
   resource_group_name = coalesce(var.resource_group_name, module.resource_names["resource_group"].standard)
-
-  depends_on = [module.iothub]
 }
 
 module "iothub_eventhub_data_sender" {
@@ -105,7 +102,7 @@ module "iothub_eventhub_data_sender" {
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = data.azurerm_iothub.iothub_identity[0].identity[0].principal_id
 
-  depends_on = [module.iothub, module.eventhub_namespace, data.azurerm_iothub.iothub_identity]
+  depends_on = [data.azurerm_iothub.iothub_identity, module.eventhub_namespace]
 }
 
 module "iothub_dps" {
