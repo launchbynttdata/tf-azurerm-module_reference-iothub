@@ -25,6 +25,11 @@ output "iothub_name" {
   value       = module.iothub.name
 }
 
+output "iothub_principal_id" {
+  description = "The principal ID of the IoT Hub system-assigned managed identity. Used for RBAC role assignments."
+  value       = try(data.azurerm_iothub.iothub_identity[0].identity[0].principal_id, null)
+}
+
 output "iothub_dps_id" {
   description = "The IoT Hub Device Provisioning Service Id."
   value       = module.iothub_dps.id

@@ -113,7 +113,9 @@ If `make check` target is successful, developer is good to commit the code to pr
 
 ## Providers
 
-No providers.
+| Name | Version |
+|------|---------|
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.117.1 |
 
 ## Modules
 
@@ -122,6 +124,7 @@ No providers.
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.0 |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.1 |
 | <a name="module_iothub"></a> [iothub](#module\_iothub) | terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm | ~> 1.0 |
+| <a name="module_iothub_eventhub_data_sender"></a> [iothub\_eventhub\_data\_sender](#module\_iothub\_eventhub\_data\_sender) | terraform.registry.launch.nttdata.com/module_primitive/role_assignment/azurerm | ~> 1.0 |
 | <a name="module_iothub_dps"></a> [iothub\_dps](#module\_iothub\_dps) | terraform.registry.launch.nttdata.com/module_primitive/iothub_dps/azurerm | ~> 1.0 |
 | <a name="module_eventhub_namespace"></a> [eventhub\_namespace](#module\_eventhub\_namespace) | terraform.registry.launch.nttdata.com/module_primitive/eventhub_namespace/azurerm | 1.1.4 |
 | <a name="module_eventhub_namespace_private_endpoint"></a> [eventhub\_namespace\_private\_endpoint](#module\_eventhub\_namespace\_private\_endpoint) | terraform.registry.launch.nttdata.com/module_primitive/private_endpoint/azurerm | ~> 1.0 |
@@ -135,7 +138,9 @@ No providers.
 
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [azurerm_iothub.iothub_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/iothub) | data source |
 
 ## Inputs
 
@@ -165,6 +170,10 @@ No resources.
 | <a name="input_enrichments"></a> [enrichments](#input\_enrichments) | (Optional) A map of enrichments and their respective properties<br/>    object({<br/>      key (as map key) = (Required) The key of the enrichment.<br/>      value            = (Required) The value of the enrichment. Value can be any static string, the name of the IoT Hub sending the message (use $iothubname) or information from the device twin (ex: $twin.tags.latitude)<br/>      endpoint\_names   = (Required) The list of endpoints which will be enriched.<br/>    }) | <pre>map(object({<br/>    value          = string<br/>    endpoint_names = list(string)<br/>  }))</pre> | `{}` | no |
 | <a name="input_cloud_to_device"></a> [cloud\_to\_device](#input\_cloud\_to\_device) | (Optional) An object for cloud-to-device messaging properties.<br/>    object({<br/>      max\_delivery\_count = (Optional) The maximum delivery count for cloud-to-device per-device queues. This value must be between 1 and 100. Defaults to 10.<br/>      default\_ttl        = (Optional) The default time to live for cloud-to-device messages, specified as an ISO 8601 timespan duration. This value must be between 1 minute and 48 hours. Defaults to PT1H.<br/>      feedback = object({<br/>        time\_to\_live       = (Optional) The retention time for service-bound feedback messages, specified as an ISO 8601 timespan duration. This value must be between 1 minute and 48 hours. Defaults to PT1H.<br/>        max\_delivery\_count = (Optional) The maximum delivery count for the feedback queue. This value must be between 1 and 100. Defaults to 10.<br/>        lock\_duration      = (Optional) The lock duration for the feedback queue, specified as an ISO 8601 timespan duration. This value must be between 5 and 300 seconds. Defaults to PT60S.<br/>    }) | <pre>object({<br/>    max_delivery_count = number<br/>    default_ttl        = string<br/>    feedback = object({<br/>      time_to_live       = string<br/>      max_delivery_count = number<br/>      lock_duration      = string<br/>    })<br/>  })</pre> | `null` | no |
 | <a name="input_consumer_groups"></a> [consumer\_groups](#input\_consumer\_groups) | (Optional) A map of consumer groups and their respective properties."<br/>    map(object({<br/>      name (as map key)      = (Required) The name of this Consumer Group.<br/>      eventhub\_endpoint\_name = (Required) The name of the Event Hub-compatible endpoint in the IoT hub.<br/>    })) | <pre>map(object({<br/>    eventhub_endpoint_name = string<br/>  }))</pre> | `{}` | no |
+| <a name="input_generate_eventhub_endpoints_from_eventhubs"></a> [generate\_eventhub\_endpoints\_from\_eventhubs](#input\_generate\_eventhub\_endpoints\_from\_eventhubs) | (Optional) Whether to automatically generate IoT Hub custom endpoints from eventhubs map. When false, only explicit endpoints map is used. Defaults to true for backward compatibility. | `bool` | `true` | no |
+| <a name="input_generate_eventhub_routes_from_eventhubs"></a> [generate\_eventhub\_routes\_from\_eventhubs](#input\_generate\_eventhub\_routes\_from\_eventhubs) | (Optional) Whether to automatically generate IoT Hub routes from eventhubs map. When false, only explicit routes map is used. Defaults to true for backward compatibility. | `bool` | `true` | no |
+| <a name="input_grant_iothub_eventhub_data_sender_role"></a> [grant\_iothub\_eventhub\_data\_sender\_role](#input\_grant\_iothub\_eventhub\_data\_sender\_role) | (Optional) Whether to grant IoT Hub system-assigned identity Azure Event Hubs Data Sender role on Event Hub namespace. Required for identity-based custom endpoints. Defaults to false. | `bool` | `false` | no |
+| <a name="input_eventhub_data_sender_scope"></a> [eventhub\_data\_sender\_scope](#input\_eventhub\_data\_sender\_scope) | (Optional) Scope for the Event Hubs Data Sender role assignment. If not provided, defaults to Event Hub namespace ID. Should be Event Hub namespace ID or specific Event Hub ID. | `string` | `null` | no |
 | <a name="input_allocation_policy"></a> [allocation\_policy](#input\_allocation\_policy) | (Optional) The allocation policy of the IoT Device Provisioning Service (Hashed, GeoLatency or Static). Defaults to Hashed. | `string` | `"Hashed"` | no |
 | <a name="input_data_residency_enabled"></a> [data\_residency\_enabled](#input\_data\_residency\_enabled) | Optional) Specifies if the IoT Device Provisioning Service has data residency and disaster recovery enabled. Defaults to false. | `bool` | `false` | no |
 | <a name="input_dps_sku"></a> [dps\_sku](#input\_dps\_sku) | (Required) The pricing tier for the IoT Device Provisioning Service.<br/>    object({<br/>      name     = (Required) The name of the sku. Currently can only be set to S1.<br/>      capacity = (Required) The number of provisioned IoT Device Provisioning Service units. Currently set to 1.<br/>    }) | <pre>object({<br/>    name     = string<br/>    capacity = number<br/>  })</pre> | <pre>{<br/>  "capacity": 1,<br/>  "name": "S1"<br/>}</pre> | no |
@@ -204,6 +213,7 @@ No resources.
 | <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | The resource group for the reference Iot Hub. |
 | <a name="output_iothub_id"></a> [iothub\_id](#output\_iothub\_id) | The IoT Hub Id. |
 | <a name="output_iothub_name"></a> [iothub\_name](#output\_iothub\_name) | The IoT Hub Name. |
+| <a name="output_iothub_principal_id"></a> [iothub\_principal\_id](#output\_iothub\_principal\_id) | The principal ID of the IoT Hub system-assigned managed identity. Used for RBAC role assignments. |
 | <a name="output_iothub_dps_id"></a> [iothub\_dps\_id](#output\_iothub\_dps\_id) | The IoT Hub Device Provisioning Service Id. |
 | <a name="output_iothub_dps_name"></a> [iothub\_dps\_name](#output\_iothub\_dps\_name) | The IoT Hub Device Provisioning Service Name. |
 | <a name="output_scope_id"></a> [scope\_id](#output\_scope\_id) | The IoT Hub Device Provisioning Service Scope Id. |

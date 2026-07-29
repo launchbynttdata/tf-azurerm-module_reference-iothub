@@ -51,26 +51,32 @@ module "iothub" {
   event_hub_partition_count     = var.event_hub_partition_count
   event_hub_retention_in_days   = var.event_hub_retention_in_days
   public_network_access_enabled = var.public_network_access_enabled
-  endpoints = merge(var.endpoints, {
-    for key, eventhub in var.eventhubs : key => {
-      type              = eventhub.endpoint_type
-      connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
-    }
-    if eventhub.endpoint_type != null
-  })
+  endpoints = merge(
+    var.generate_eventhub_endpoints_from_eventhubs ? {
+      for key, eventhub in var.eventhubs : key => {
+        type              = eventhub.endpoint_type
+        connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
+      }
+      if eventhub.endpoint_type != null
+    } : {},
+    var.endpoints
+  )
   fallback_route   = var.fallback_route
   file_uploads     = var.file_uploads
   identity         = var.identity
   network_rule_set = var.network_rule_set
-  routes = merge(var.routes, {
-    for key, eventhub in var.eventhubs : key => {
-      endpoint_names = [key]
-      source         = eventhub.route.source
-      condition      = eventhub.route.condition
-      enabled        = eventhub.route.enabled
-    }
-    if eventhub.route != null
-  })
+  routes = merge(
+    var.generate_eventhub_routes_from_eventhubs ? {
+      for key, eventhub in var.eventhubs : key => {
+        endpoint_names = [key]
+        source         = eventhub.route.source
+        condition      = eventhub.route.condition
+        enabled        = eventhub.route.enabled
+      }
+      if eventhub.route != null
+    } : {},
+    var.routes
+  )
   enrichments     = var.enrichments
   cloud_to_device = var.cloud_to_device
   consumer_groups = var.consumer_groups
@@ -78,6 +84,28 @@ module "iothub" {
 
   tags       = merge(local.tags, { resource_name = module.resource_names["iothub"].standard })
   depends_on = [module.resource_group, module.eventhub, module.eventhub_auth_rules]
+}
+
+data "azurerm_iothub" "iothub_identity" {
+  count = var.grant_iothub_eventhub_data_sender_role && var.identity.identity_type == "SystemAssigned" ? 1 : 0
+
+  name                = module.iothub.name
+  resource_group_name = coalesce(var.resource_group_name, module.resource_names["resource_group"].standard)
+
+  depends_on = [module.iothub]
+}
+
+module "iothub_eventhub_data_sender" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/role_assignment/azurerm"
+  version = "~> 1.0"
+
+  count = var.grant_iothub_eventhub_data_sender_role && var.identity.identity_type == "SystemAssigned" ? 1 : 0
+
+  scope                = coalesce(var.eventhub_data_sender_scope, try(module.eventhub_namespace[0].namespace_id, null))
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = data.azurerm_iothub.iothub_identity[0].identity[0].principal_id
+
+  depends_on = [module.iothub, module.eventhub_namespace, data.azurerm_iothub.iothub_identity]
 }
 
 module "iothub_dps" {

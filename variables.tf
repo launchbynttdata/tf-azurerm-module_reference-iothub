@@ -344,6 +344,32 @@ variable "consumer_groups" {
   default = {}
 }
 
+# IoT Hub Endpoint and Route Generation Control
+variable "generate_eventhub_endpoints_from_eventhubs" {
+  description = "(Optional) Whether to automatically generate IoT Hub custom endpoints from eventhubs map. When false, only explicit endpoints map is used. Defaults to true for backward compatibility."
+  type        = bool
+  default     = true
+}
+
+variable "generate_eventhub_routes_from_eventhubs" {
+  description = "(Optional) Whether to automatically generate IoT Hub routes from eventhubs map. When false, only explicit routes map is used. Defaults to true for backward compatibility."
+  type        = bool
+  default     = true
+}
+
+# IoT Hub RBAC Configuration
+variable "grant_iothub_eventhub_data_sender_role" {
+  description = "(Optional) Whether to grant IoT Hub system-assigned identity Azure Event Hubs Data Sender role on Event Hub namespace. Required for identity-based custom endpoints. Defaults to false."
+  type        = bool
+  default     = false
+}
+
+variable "eventhub_data_sender_scope" {
+  description = "(Optional) Scope for the Event Hubs Data Sender role assignment. If not provided, defaults to Event Hub namespace ID. Should be Event Hub namespace ID or specific Event Hub ID."
+  type        = string
+  default     = null
+}
+
 # Device Provisioning Service Properties
 variable "allocation_policy" {
   type        = string
