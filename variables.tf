@@ -606,7 +606,8 @@ variable "eventhubs" {
       manage = false
     })
     # iothub custom endpoint
-    endpoint_type = optional(string, "AzureIotHub.EventHub")
+    endpoint_type       = optional(string, "AzureIotHub.EventHub")
+    authentication_type = optional(string, "keyBased") # keyBased or identityBased
     # iothub route
     route = optional(object({
       source    = optional(string, "DeviceMessages")

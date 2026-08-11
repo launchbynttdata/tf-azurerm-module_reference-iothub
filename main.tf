@@ -40,7 +40,7 @@ module "resource_group" {
 
 module "iothub" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm"
-  version = "~> 1.0"
+  version = "~> 2.1"
 
   name                = module.resource_names["iothub"].standard
   location            = var.location
@@ -53,7 +53,12 @@ module "iothub" {
   public_network_access_enabled = var.public_network_access_enabled
   endpoints = merge(
     var.generate_eventhub_endpoints_from_eventhubs ? {
-      for key, eventhub in var.eventhubs : key => {
+      for key, eventhub in var.eventhubs : key => eventhub.authentication_type == "identityBased" ? {
+        type                = eventhub.endpoint_type
+        authentication_type = "identityBased"
+        endpoint_uri        = "sb://${module.eventhub_namespace[0].namespace_name}.servicebus.windows.net/"
+        entity_path         = key
+        } : {
         type              = eventhub.endpoint_type
         connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
       }
@@ -83,13 +88,7 @@ module "iothub" {
   min_tls_version = var.min_tls_version
 
   tags       = merge(local.tags, { resource_name = module.resource_names["iothub"].standard })
-  depends_on = [module.resource_group, module.eventhub, module.eventhub_auth_rules, module.iothub_eventhub_data_sender]
-}
-data "azurerm_iothub" "iothub_identity" {
-  count = var.grant_iothub_eventhub_data_sender_role && var.identity.identity_type == "SystemAssigned" ? 1 : 0
-
-  name                = module.resource_names["iothub"].standard
-  resource_group_name = coalesce(var.resource_group_name, module.resource_names["resource_group"].standard)
+  depends_on = [module.resource_group, module.eventhub, module.eventhub_auth_rules]
 }
 
 module "iothub_eventhub_data_sender" {
@@ -100,9 +99,9 @@ module "iothub_eventhub_data_sender" {
 
   scope                = coalesce(var.eventhub_data_sender_scope, try(module.eventhub_namespace[0].namespace_id, null))
   role_definition_name = "Azure Event Hubs Data Sender"
-  principal_id         = data.azurerm_iothub.iothub_identity[0].identity[0].principal_id
+  principal_id         = module.iothub.principal_id
 
-  depends_on = [data.azurerm_iothub.iothub_identity, module.eventhub_namespace]
+  depends_on = [module.iothub, module.eventhub_namespace]
 }
 
 module "iothub_dps" {
