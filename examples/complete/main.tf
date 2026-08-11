@@ -49,8 +49,7 @@ module "iothub" {
         send   = true
         manage = false
       }
-      endpoint_type       = "AzureIotHub.EventHub"
-      authentication_type = "identityBased"
+      endpoint_type = "AzureIotHub.EventHub"
       route = {
         source    = "DeviceMessages"
         condition = "true"
