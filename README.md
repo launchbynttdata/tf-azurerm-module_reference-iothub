@@ -210,6 +210,7 @@ No resources.
 | <a name="output_iothub_id"></a> [iothub\_id](#output\_iothub\_id) | The IoT Hub Id. |
 | <a name="output_iothub_name"></a> [iothub\_name](#output\_iothub\_name) | The IoT Hub Name. |
 | <a name="output_iothub_principal_id"></a> [iothub\_principal\_id](#output\_iothub\_principal\_id) | The principal ID of the IoT Hub system-assigned managed identity. Used for RBAC role assignments. |
+| <a name="output_iothub_tenant_id"></a> [iothub\_tenant\_id](#output\_iothub\_tenant\_id) | The tenant ID of the IoT Hub system-assigned managed identity. |
 | <a name="output_iothub_dps_id"></a> [iothub\_dps\_id](#output\_iothub\_dps\_id) | The IoT Hub Device Provisioning Service Id. |
 | <a name="output_iothub_dps_name"></a> [iothub\_dps\_name](#output\_iothub\_dps\_name) | The IoT Hub Device Provisioning Service Name. |
 | <a name="output_scope_id"></a> [scope\_id](#output\_scope\_id) | The IoT Hub Device Provisioning Service Scope Id. |
