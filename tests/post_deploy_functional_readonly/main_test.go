@@ -33,5 +33,5 @@ func TestIothubModule(t *testing.T) {
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		Build()
 
-	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestIothub)
+	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestComposableIothubReadOnly)
 }
