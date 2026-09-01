@@ -25,6 +25,16 @@ output "iothub_name" {
   value       = module.iothub.name
 }
 
+output "iothub_principal_id" {
+  description = "The principal ID of the IoT Hub system-assigned managed identity. Used for RBAC role assignments."
+  value       = try(module.iothub.principal_id, null)
+}
+
+output "iothub_tenant_id" {
+  description = "The tenant ID of the IoT Hub system-assigned managed identity."
+  value       = try(module.iothub.tenant_id, null)
+}
+
 output "iothub_dps_id" {
   description = "The IoT Hub Device Provisioning Service Id."
   value       = module.iothub_dps.id

@@ -75,3 +75,9 @@ func TestIothub(t *testing.T, ctx types.TestContext) {
 	})
 
 }
+
+// TestComposableIothubReadOnly is the readonly entry point required by
+// lcaf-component-terratest's RunNonDestructiveTest (enforces TestComposable* prefix).
+func TestComposableIothubReadOnly(t *testing.T, ctx types.TestContext) {
+	TestIothub(t, ctx)
+}

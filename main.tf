@@ -40,7 +40,7 @@ module "resource_group" {
 
 module "iothub" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/iothub/azurerm"
-  version = "~> 1.0"
+  version = "~> 2.1"
 
   name                = module.resource_names["iothub"].standard
   location            = var.location
@@ -51,26 +51,37 @@ module "iothub" {
   event_hub_partition_count     = var.event_hub_partition_count
   event_hub_retention_in_days   = var.event_hub_retention_in_days
   public_network_access_enabled = var.public_network_access_enabled
-  endpoints = merge(var.endpoints, {
-    for key, eventhub in var.eventhubs : key => {
-      type              = eventhub.endpoint_type
-      connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
-    }
-    if eventhub.endpoint_type != null
-  })
+  endpoints = merge(
+    var.generate_eventhub_endpoints_from_eventhubs ? {
+      for key, eventhub in var.eventhubs : key => eventhub.authentication_type == "identityBased" ? {
+        type                = eventhub.endpoint_type
+        authentication_type = "identityBased"
+        endpoint_uri        = "sb://${module.eventhub_namespace[0].namespace_name}.servicebus.windows.net/"
+        entity_path         = key
+        } : {
+        type              = eventhub.endpoint_type
+        connection_string = module.eventhub_auth_rules[key].auth_rule_primary_connection_string
+      }
+      if eventhub.endpoint_type != null
+    } : {},
+    var.endpoints
+  )
   fallback_route   = var.fallback_route
   file_uploads     = var.file_uploads
   identity         = var.identity
   network_rule_set = var.network_rule_set
-  routes = merge(var.routes, {
-    for key, eventhub in var.eventhubs : key => {
-      endpoint_names = [key]
-      source         = eventhub.route.source
-      condition      = eventhub.route.condition
-      enabled        = eventhub.route.enabled
-    }
-    if eventhub.route != null
-  })
+  routes = merge(
+    var.generate_eventhub_routes_from_eventhubs ? {
+      for key, eventhub in var.eventhubs : key => {
+        endpoint_names = [key]
+        source         = eventhub.route.source
+        condition      = eventhub.route.condition
+        enabled        = eventhub.route.enabled
+      }
+      if eventhub.route != null
+    } : {},
+    var.routes
+  )
   enrichments     = var.enrichments
   cloud_to_device = var.cloud_to_device
   consumer_groups = var.consumer_groups
@@ -78,6 +89,28 @@ module "iothub" {
 
   tags       = merge(local.tags, { resource_name = module.resource_names["iothub"].standard })
   depends_on = [module.resource_group, module.eventhub, module.eventhub_auth_rules]
+}
+
+# NOTE: When using identityBased endpoint routing (var.eventhubs[*].authentication_type = "identityBased"),
+# a two-step apply is required on first deployment:
+#   Step 1: Apply with identityBased endpoints — creates the IoT Hub and the Data Sender role assignment.
+#   Step 2: Apply again — IoT Hub re-evaluates endpoint routing with the role now in place.
+# This is a known Terraform limitation: the role assignment requires module.iothub.principal_id
+# (so it must run after IoT Hub creation), while Azure validates the role before activating
+# identityBased routing. A direct depends_on from module.iothub → module.iothub_eventhub_data_sender
+# cannot be added without creating a circular dependency.
+module "iothub_eventhub_data_sender" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/role_assignment/azurerm"
+  version = "~> 1.0"
+
+  # Includes "SystemAssigned, UserAssigned" because a system identity is present in that case too.
+  count = var.grant_iothub_eventhub_data_sender_role && contains(["SystemAssigned", "SystemAssigned, UserAssigned"], var.identity.identity_type) ? 1 : 0
+
+  scope                = coalesce(var.eventhub_data_sender_scope, try(module.eventhub_namespace[0].namespace_id, null))
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = module.iothub.principal_id
+
+  depends_on = [module.iothub, module.eventhub_namespace]
 }
 
 module "iothub_dps" {
