@@ -92,13 +92,12 @@ module "iothub" {
 }
 
 # NOTE: When using identityBased endpoint routing (var.eventhubs[*].authentication_type = "identityBased"),
-# a two-step apply is required on first deployment:
-#   Step 1: Apply with identityBased endpoints — creates the IoT Hub and the Data Sender role assignment.
-#   Step 2: Apply again — IoT Hub re-evaluates endpoint routing with the role now in place.
-# This is a known Terraform limitation: the role assignment requires module.iothub.principal_id
-# (so it must run after IoT Hub creation), while Azure validates the role before activating
-# identityBased routing. A direct depends_on from module.iothub → module.iothub_eventhub_data_sender
-# cannot be added without creating a circular dependency.
+# a two-step apply is still sometimes required on first deployment because Azure validates endpoint
+# auth against the role assignment after the IoT Hub identity is created.
+#
+# We intentionally do not add an explicit depends_on here. The role assignment already depends
+# on module.iothub.principal_id via the principal_id argument, and adding a direct hard dependency
+# can force the wrong ordering during the identityBased migration and trigger Azure 401 validation.
 module "iothub_eventhub_data_sender" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/role_assignment/azurerm"
   version = "~> 1.0"
@@ -109,8 +108,6 @@ module "iothub_eventhub_data_sender" {
   scope                = coalesce(var.eventhub_data_sender_scope, try(module.eventhub_namespace[0].namespace_id, null))
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = module.iothub.principal_id
-
-  depends_on = [module.iothub, module.eventhub_namespace]
 }
 
 module "iothub_dps" {
